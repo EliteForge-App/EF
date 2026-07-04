@@ -48,3 +48,19 @@ export interface ApiConfig {
    */
   timeout: number
 }
+
+/** Respuesta de POST /api/auth/login y /api/auth/register (API Gateway). */
+export interface AuthApiResponse {
+  accessToken: string
+  user: {
+    id: string
+    email: string
+    name: string
+  }
+}
+
+export interface AuthUser {
+  id: string
+  email: string
+  name: string
+}

@@ -1,0 +1,23 @@
+# Dependencias (se instalan en el contenedor)
+node_modules
+**/node_modules
+
+# Mobile: solo se necesita package.json para sincronizar el lockfile del workspace
+apps/mobile/**
+!apps/mobile/package.json
+
+# Artefactos y entorno local
+apps/backend/dist
+**/dist
+coverage
+**/.env
+.env
+.git
+.github
+.cursor
+docs
+infrastructure/aws
+infrastructure/kubernetes
+**/*.md
+**/*.log
+**/.DS_Store

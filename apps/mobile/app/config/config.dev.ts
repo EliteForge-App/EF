@@ -5,6 +5,11 @@
  *
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
+import { Platform } from "react-native"
+
+/** Android emulator maps host localhost to 10.0.2.2 */
+const API_HOST = Platform.OS === "android" ? "10.0.2.2" : "localhost"
+
 export default {
-  API_URL: "https://api.rss2json.com/v1/",
+  API_URL: `http://${API_HOST}:3000/api/`,
 }
