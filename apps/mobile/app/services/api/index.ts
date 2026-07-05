@@ -8,10 +8,12 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 
 import Config from "@/config"
-import type { EpisodeItem } from "@/services/api/types"
+import type { AuthApiResponse, EpisodeItem } from "@/services/api/types"
 
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type { ApiConfig, ApiFeedResponse } from "./types"
+
+export type { AuthApiResponse, AuthUser } from "./types"
 
 /**
  * Configuring the apisauce instance.
@@ -41,6 +43,39 @@ export class Api {
         Accept: "application/json",
       },
     })
+  }
+
+  /**
+   * Authenticates a user via the API Gateway (proxies auth-service).
+   */
+  async login(
+    email: string,
+    password: string,
+  ): Promise<
+    | { kind: "ok"; accessToken: string; user: AuthApiResponse["user"] }
+    | GeneralApiProblem
+  > {
+    const response = await this.apisauce.post<AuthApiResponse>("auth/login", {
+      email,
+      password,
+    })
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+      return { kind: "unknown", temporary: true }
+    }
+
+    const data = response.data
+    if (!data?.accessToken || !data?.user) {
+      return { kind: "bad-data" }
+    }
+
+    return {
+      kind: "ok",
+      accessToken: data.accessToken,
+      user: data.user,
+    }
   }
 
   /**

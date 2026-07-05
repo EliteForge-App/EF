@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ef_password}
       POSTGRES_DB: ${POSTGRES_DB:-ef_db}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -37,8 +37,8 @@ services:
 
   api-gateway:
     build:
-      context: ../../apps/backend
-      dockerfile: ../../infrastructure/docker/Dockerfile.api-gateway
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.api-gateway
     container_name: ef-api-gateway
     restart: unless-stopped
     ports:
@@ -58,8 +58,8 @@ services:
 
   auth-service:
     build:
-      context: ../../apps/backend
-      dockerfile: ../../infrastructure/docker/Dockerfile.auth-service
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.auth-service
     container_name: ef-auth-service
     restart: unless-stopped
     environment:
@@ -78,8 +78,8 @@ services:
 
   users-service:
     build:
-      context: ../../apps/backend
-      dockerfile: ../../infrastructure/docker/Dockerfile.users-service
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.users-service
     container_name: ef-users-service
     restart: unless-stopped
     environment:

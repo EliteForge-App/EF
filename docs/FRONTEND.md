@@ -13,8 +13,8 @@ El frontend vive en `apps/mobile/` y es una aplicación **React Native** generad
 | Área | Estado |
 |------|--------|
 | Pantalla de **Login** (UI) | Implementada |
-| Pantalla de **Register** (placeholder) | Navegable, sin formulario completo |
-| **Backend / auth real** | No conectado (botones y sign in solo UI) |
+| Pantalla de **Register** (placeholder) | En stack; registro real vía portal web externo |
+| **Backend / auth real** | Login conectado al API Gateway (`POST /api/auth/login`) |
 | **Demo screens** (Ignite) | Presentes, no son parte del producto final |
 | **Expo Dev Client** | Configurado para Android/iOS |
 
@@ -70,7 +70,7 @@ La pantalla inicial para usuarios no autenticados es **Login** (`AppNavigator.ts
 | `react-native-screens` | Optimización de navegación nativa |
 | `react-native-edge-to-edge` | Pantalla edge-to-edge |
 | `i18next`, `react-i18next`, `expo-localization` | Traducciones |
-| `apisauce` | Cliente HTTP (preparado, sin uso en login) |
+| `apisauce` | Cliente HTTP (login + demo podcast) |
 | `date-fns` | Formateo de fechas |
 | `react-native-mmkv` | Storage rápido |
 
@@ -262,10 +262,14 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] Fondo global `#424242` (revertido desde gris `#9C9C9C`)
 - [x] Tarjeta elevada `#363636` con franja bicolor superior
 - [x] Inputs con labels, placeholders i18n y toggle de contraseña
-- [x] Enlace "Crear cuenta" → Register
+- [x] Enlace "Crear cuenta" → `https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up` (`openLinkInBrowser`)
 - [x] Botones Gmail/Facebook (solo UI)
+- [x] `handleLogin` conectado al API Gateway — `api.login()`, token en `AuthContext` (MMKV)
+- [x] `handleCreateAccount` abre registro web externo (Hostinger)
+- [x] Validación email/contraseña, errores i18n, estado de carga
+- [x] `config.dev.ts` apunta a `http://localhost:3000/api/` (Android emulator: `10.0.2.2`)
 
-### Logo
+### Pantalla Login
 
 - [x] Nuevo logo oficial en `docs/assets/` y `apps/mobile/assets/images/`
 - [x] Documentación de composición en `ELITE_FORGE.md`
@@ -345,9 +349,10 @@ Al implementar algo nuevo:
 | Documento | Contenido |
 |-----------|-----------|
 | [ELITE_FORGE.md](./ELITE_FORGE.md) | Producto, módulos, logo, negocio |
+| [BACKEND.md](./BACKEND.md) | API, microservicios, base de datos |
 | [README.md](../README.md) | Monorepo completo, backend, infra |
 | `.cursor/rules/mobile-responsive-ui.mdc` | Estándares UI responsiva |
 
 ---
 
-*Última actualización: implementación frontend auth UI — Login, componentes, logo, animaciones y layout responsivo.*
+*Última actualización: login conectado al backend vía API Gateway.*
