@@ -12,10 +12,11 @@ El frontend vive en `apps/mobile/` y es una aplicación **React Native** generad
 
 | Área | Estado |
 |------|--------|
-| Pantalla de **Login** (UI) | Implementada |
+| Pantalla de **Login** | Implementada + conectada al API Gateway |
+| Pantalla **Feed** (red social) | Implementada (UI mock, sin backend) |
 | Pantalla de **Register** (placeholder) | En stack; registro real vía portal web externo |
 | **Backend / auth real** | Login conectado al API Gateway (`POST /api/auth/login`) |
-| **Demo screens** (Ignite) | Presentes, no son parte del producto final |
+| **Feed backend** | No implementado — datos mock en `app/data/mockFeedPosts.ts` |
 | **Expo Dev Client** | Configurado para Android/iOS |
 
 ### Flujo de arranque
@@ -27,10 +28,10 @@ app.tsx
   ├── SafeAreaProvider + KeyboardProvider
   └── AppNavigator
         ├── No autenticado → Login / Register
-        └── Autenticado     → Welcome / Demo
+        └── Autenticado     → Feed / Demo
 ```
 
-La pantalla inicial para usuarios no autenticados es **Login** (`AppNavigator.tsx`).
+La pantalla inicial para usuarios autenticados es **Feed** (`FeedScreen`). Sin sesión → **Login**.
 
 ---
 
@@ -72,7 +73,7 @@ La pantalla inicial para usuarios no autenticados es **Login** (`AppNavigator.ts
 | `i18next`, `react-i18next`, `expo-localization` | Traducciones |
 | `apisauce` | Cliente HTTP (login + demo podcast) |
 | `date-fns` | Formateo de fechas |
-| `react-native-mmkv` | Storage rápido |
+| `react-native-drawer-layout` | Drawer lateral del Feed (menú) |
 
 ### Desarrollo
 
@@ -95,9 +96,15 @@ apps/mobile/
 │   ├── hooks/
 │   │   ├── useResponsiveLayout.ts
 │   │   └── useInteractiveMotion.ts
-│   ├── screens/auth/
-│   │   ├── LoginScreen.tsx
-│   │   └── RegisterScreen.tsx
+│   ├── data/
+│   │   └── mockFeedPosts.ts       # Posts mock del Feed (sin backend)
+│   ├── screens/
+│   │   ├── auth/
+│   │   │   ├── LoginScreen.tsx
+│   │   │   └── RegisterScreen.tsx
+│   │   └── feed/
+│   │       ├── FeedScreen.tsx
+│   │       └── components/        # FeedNavbar, FeedDrawer, FeedPostCard, etc.
 │   ├── navigators/AppNavigator.tsx
 │   ├── theme/
 │   │   ├── eliteForgeColors.ts
@@ -181,15 +188,55 @@ Export centralizado: `app/components/ui/index.ts`
 3. **AuthFormCard** con:
    - Input usuario
    - Input contraseña (secure + Ver/Ocultar)
-   - Botón Sign in (sin lógica de backend)
+   - Botón Sign in (conectado al API)
    - Enlace a Register
 4. **Divider** + botones sociales **Gmail** y **Facebook** en **una fila** (modo compact)
 
-### Comportamiento intencional (solo UI)
+### Comportamiento
 
-- `onPress={() => undefined}` en Sign in y redes sociales
-- Estado local `username` / `password` sin envío a API
-- Navegación a `Register` funcional
+- Login real vía `api.login()`; token en `AuthContext` (MMKV) → redirección automática a **Feed**
+- `handleCreateAccount` abre registro web externo (Hostinger)
+- Botones Gmail/Facebook (solo UI)
+
+---
+
+## Pantalla Feed — red social (UI)
+
+**Archivo principal:** `app/screens/feed/FeedScreen.tsx`
+
+Destino post-login. Estilo tipo **Facebook**: publicaciones de jugadores, anuncios Elite Forge, composer superior y acciones sociales (solo UI).
+
+### Layout
+
+- `react-native-drawer-layout` — menú lateral (~82% ancho)
+- `FeedNavbar` — barra bicolor, botón menú animado, logo, miniatura de perfil del usuario
+- `FlatList` responsiva con `useResponsiveLayout()`
+- Fondo `#424242`
+
+### Componentes del Feed
+
+| Componente | Descripción |
+|------------|-------------|
+| `FeedNavbar` | Navbar interactivo; logo centrado; avatar abre el drawer |
+| `FeedDrawer` | Perfil, Grupos, Partidos, Reservas (próximamente) + cerrar sesión |
+| `FeedComposer` | “¿Qué quieres compartir?” + accesos Foto / Video / Partido (stub) |
+| `FeedPostCard` | Tarjeta de publicación: texto, imagen, video, likes/comentarios |
+| `FeedAvatar` | Avatar circular con iniciales y animación press |
+| `mockFeedPosts.ts` | Datos mock (jugadores + anuncios Elite Forge) |
+
+### Drawer — accesos futuros
+
+| Ítem | Estado |
+|------|--------|
+| Perfil | Alert “Próximamente” |
+| Grupos | Alert “Próximamente” |
+| Partidos | Alert “Próximamente” |
+| Reservas | Alert “Próximamente” |
+| Cerrar sesión | Funcional (`logout()` → Login) |
+
+### i18n
+
+Claves `feedScreen:*` y `feedDrawer:*` en los 7 idiomas.
 
 ---
 
@@ -290,12 +337,24 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] Animaciones en `Button`, `SocialButton`, `Input`
 - [x] Componente `AuthFormCard` con hover en contenedor del login
 
+### Feed (red social)
+
+- [x] `FeedScreen` como destino post-login en `AppNavigator`
+- [x] `FeedNavbar` interactivo con miniatura de perfil y menú
+- [x] `FeedNavbar` sin texto "Feed" — solo logo Elite Forge centrado
+- [x] `FeedMenuButton` (hamburguesa estándar) y nombre bajo avatar eliminado en navbar
+- [x] `openProfile()` en `feedNavigation.ts` — alerta "Próximamente" al pulsar avatar
+- [x] `FeedDrawer` con accesos futuros (Perfil, Grupos, Partidos, Reservas) y logout
+- [x] `FeedComposer`, `FeedPostCard`, `FeedAvatar` — estilo Facebook
+- [x] Mock data: publicaciones de jugadores + anuncios Elite Forge (`mockFeedPosts.ts`)
+- [x] i18n `feedScreen` / `feedDrawer` (7 idiomas)
+- [x] Sin backend — solo UI y datos locales
+
 ### Pendiente / fuera de alcance actual
 
-- [ ] Conectar login con `auth-service` (backend NestJS)
-- [ ] Formulario completo de Register
+- [ ] API real del Feed (publicaciones, likes, comentarios)
+- [ ] Pantallas Perfil, Grupos, Partidos, Reservas
 - [ ] OAuth real (Google / Facebook SDK)
-- [ ] Pantallas post-login del producto (feed, perfil, grupos, etc.)
 - [ ] Eliminar o aislar pantallas demo de Ignite
 
 ---

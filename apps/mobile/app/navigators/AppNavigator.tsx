@@ -11,9 +11,9 @@ import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
+import { FeedScreen } from "@/screens/feed/FeedScreen"
 import { LoginScreen } from "@/screens/auth/LoginScreen"
 import { RegisterScreen } from "@/screens/auth/RegisterScreen"
-import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator } from "./DemoNavigator"
@@ -45,11 +45,11 @@ const AppStack = () => {
           backgroundColor: eliteForgeColors.carbon,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"}
+      initialRouteName={isAuthenticated ? "Feed" : "Login"}
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Feed" component={FeedScreen} />
 
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>
