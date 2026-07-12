@@ -1,3 +1,5 @@
+export * from './roles';
+
 export const SERVICE_NAMES = {
   AUTH: 'AUTH_SERVICE',
   USERS: 'USERS_SERVICE',

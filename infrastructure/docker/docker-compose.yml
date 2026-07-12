@@ -26,7 +26,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-ef_password}
       MONGO_INITDB_DATABASE: ${MONGO_DB:-ef_mongo}
     ports:
-      - "27017:27017"
+      - "${MONGO_HOST_PORT:-27018}:27017"
     volumes:
       - mongodb_data:/data/db
     healthcheck:
@@ -71,6 +71,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-ef_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ef_password}
       POSTGRES_DB: ${POSTGRES_DB:-ef_db}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ef_user}:${POSTGRES_PASSWORD:-ef_password}@postgres:5432/${POSTGRES_DB:-ef_db}?schema=public
       JWT_SECRET: ${JWT_SECRET:-ef-dev-secret-change-in-production}
     depends_on:
       postgres:
@@ -91,6 +92,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-ef_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ef_password}
       POSTGRES_DB: ${POSTGRES_DB:-ef_db}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ef_user}:${POSTGRES_PASSWORD:-ef_password}@postgres:5432/${POSTGRES_DB:-ef_db}?schema=public
       MONGODB_URI: mongodb://${MONGO_USER:-ef_user}:${MONGO_PASSWORD:-ef_password}@mongodb:27017/${MONGO_DB:-ef_mongo}?authSource=admin
     depends_on:
       postgres:

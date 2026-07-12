@@ -207,7 +207,7 @@ POST /api/auth/login  →  AuthProxyService  →  TCP  →  auth-service
 
 ```bash
 npm run docker:build   # Construir imágenes
-npm run docker:up      # Levantar stack
+npm run docker:up      # Levantar stack completo (modo full Docker)
 npm run docker:down    # Detener stack
 ```
 
@@ -219,7 +219,12 @@ Archivos: `infrastructure/docker/`
 | ef-auth-service | docker-auth-service | (interno) |
 | ef-users-service | docker-users-service | (interno) |
 | ef-postgres | postgres:16-alpine | 5433 |
-| ef-mongodb | mongo:7 | 27017 |
+| ef-mongodb | mongo:7 | 27018 |
+
+### Desarrollo híbrido vs full Docker
+
+- **Híbrido:** `docker compose ... up postgres mongodb -d` + microservicios con `npm run start:*` en local. Ver [README — desarrollo local](../README.md#3-backend--desarrollo-local-modo-hibrido).
+- **Full Docker:** `npm run docker:up` — no arranques gateway/auth/users en local a la vez.
 
 ---
 

@@ -164,28 +164,153 @@ npm install
 cd apps/backend && npm install && cd ../..
 ```
 
-### 2. Levantar infraestructura local (Docker)
+### 2. Infraestructura local (Docker)
+
+Hay **dos modos** de desarrollo backend. No los mezcles: ambos usan los puertos **3000** y **3001**.
+
+| Modo | Cuándo usarlo | Qué corre en Docker | Qué corre en local (Node) |
+|------|---------------|---------------------|---------------------------|
+| **Híbrido (recomendado)** | Desarrollo diario con Prisma, hot-reload | PostgreSQL, MongoDB | auth-service, users-service, api-gateway |
+| **Full Docker** | Probar imágenes / CI / despliegue | Todo el stack | Nada |
+
+#### Modo híbrido — solo bases de datos en Docker
+
+```bash
+# Desde la raíz del monorepo
+docker compose -f infrastructure/docker/docker-compose.yml up postgres mongodb -d
+```
+
+#### Modo full Docker — stack completo
 
 ```bash
 npm run docker:up
 ```
 
-Esto inicia PostgreSQL, MongoDB y los tres microservicios.
+> **Importante:** si usas el modo híbrido, **no** levantes `api-gateway`, `auth-service` ni `users-service` en Docker. El contenedor `ef-api-gateway` publica el puerto **3000** en el host y provoca `EADDRINUSE` al arrancar el gateway local.
 
-### 3. Backend (desarrollo local sin Docker)
+### 3. Backend — desarrollo local (modo hibrido)
 
-```bash
-# Terminal 1 — Auth Service
-npm run backend:auth
+Arquitectura esperada:
 
-# Terminal 2 — Users Service
-npm run backend:users
-
-# Terminal 3 — API Gateway
-npm run backend:gateway
+```
+Bruno / mobile / web
+        │
+        ▼
+  API Gateway (local)     :3000  HTTP  /api/*
+        │ TCP
+        ├── auth-service (local)   :3001
+        └── users-service (local)  :3002
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+   PostgreSQL         MongoDB
+   (Docker :5433)    (Docker :27018)
 ```
 
+#### Puertos
+
+| Componente | Variable | Puerto | Dónde corre |
+|------------|----------|--------|-------------|
+| API Gateway | `API_GATEWAY_PORT` | **3000** | Local |
+| auth-service | `AUTH_SERVICE_PORT` | **3001** | Local |
+| users-service | `USERS_SERVICE_PORT` | **3002** | Local |
+| PostgreSQL | `POSTGRES_HOST_PORT` | **5433** → 5432 | Docker |
+| MongoDB | `MONGO_HOST_PORT` | **27018** → 27017 | Docker |
+
+Definidos en: `.env`, `apps/backend/apps/*/src/main.ts`, `infrastructure/docker/docker-compose.yml`.
+
+#### Orden de arranque limpio
+
+**1. Dejar el entorno libre de conflictos** (ver sección [Evitar EADDRINUSE](#evitar-eaddrinuse) más abajo).
+
+**2. Levantar PostgreSQL (y MongoDB si usas users-service):**
+
+```bash
+docker compose -f infrastructure/docker/docker-compose.yml up postgres mongodb -d
+```
+
+**3. Seed Prisma** (solo la primera vez o si faltan roles del sistema):
+
+```bash
+cd apps/backend
+npm run prisma:seed
+```
+
+**4. Arrancar microservicios** (una terminal por servicio, desde `apps/backend`):
+
+```bash
+# Terminal 1 — Auth
+npm run start:auth
+
+# Terminal 2 — Users (si aplica)
+npm run start:users
+
+# Terminal 3 — Gateway
+npm run start:gateway
+```
+
+Desde la raíz del monorepo también puedes usar:
+
+```bash
+npm run backend:auth      # Terminal 1
+npm run backend:users     # Terminal 2
+npm run backend:gateway   # Terminal 3
+```
+
+Espera en auth-service: `PostgreSQL connection established` y `Auth Service (TCP) running on port 3001`.
+
 API disponible en: `http://localhost:3000/api`
+
+#### Evitar EADDRINUSE
+
+El error `listen EADDRINUSE` significa que **3000** o **3001** ya están ocupados. Causas habituales:
+
+| Puerto | Ocupado por | Cómo comprobarlo |
+|--------|-------------|------------------|
+| **3000** | Contenedor `ef-api-gateway` o gateway Node antiguo | `lsof -i :3000` |
+| **3001** | Proceso Node de `nest start auth-service` duplicado | `lsof -i :3001` |
+
+**Comprobar qué usa cada puerto:**
+
+```bash
+lsof -i :3000
+lsof -i :3001
+lsof -i :3002
+docker ps --format 'table {{.Names}}\t{{.Ports}}\t{{.Status}}'
+```
+
+**Limpiar entorno para desarrollo híbrido** (no borra volúmenes ni imágenes):
+
+```bash
+# Detener solo los microservicios Docker (deja postgres y mongodb)
+docker compose -f infrastructure/docker/docker-compose.yml stop api-gateway auth-service users-service
+
+# O detener contenedores concretos por nombre
+docker stop ef-api-gateway ef-auth-service ef-users-service
+```
+
+**Detener procesos Node locales** (sustituye `<PID>` por el valor de `lsof`):
+
+```bash
+kill <PID>
+```
+
+Si quedaron procesos `nest` en segundo plano:
+
+```bash
+pkill -f "nest start api-gateway"
+pkill -f "nest start auth-service"
+pkill -f "nest start users-service"
+```
+
+**Verificar que los puertos quedaron libres** (sin salida = libre):
+
+```bash
+lsof -i :3000
+lsof -i :3001
+```
+
+Luego sigue el [orden de arranque limpio](#orden-de-arranque-limpio) de arriba.
 
 ### 4. Mobile
 

@@ -1,21 +1,77 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProfileEntity } from '../entities/user-profile.entity';
+import { PrismaService } from '@ef/database';
+
+/**
+ * Forma interna compatible con {@link UserProfile} de @ef/contracts.
+ * El mapeo vive en el repositorio para no modificar DTOs ni UsersService.
+ */
+export interface UserProfileRecord {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+}
 
 @Injectable()
 export class UserProfileRepository {
-  constructor(
-    @InjectRepository(UserProfileEntity)
-    private readonly repo: Repository<UserProfileEntity>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  findById(id: string): Promise<UserProfileEntity | null> {
-    return this.repo.findOne({ where: { id } });
+  async findById(userId: string): Promise<UserProfileRecord | null> {
+    const profile = await this.prisma.profile.findUnique({
+      where: { userId },
+      include: { user: true },
+    });
+
+    if (!profile) {
+      return null;
+    }
+
+    return this.toRecord(profile);
   }
 
-  async updateName(id: string, name: string): Promise<UserProfileEntity | null> {
-    await this.repo.update({ id }, { name });
-    return this.findById(id);
+  async updateName(
+    userId: string,
+    name: string,
+  ): Promise<UserProfileRecord | null> {
+    const profile = await this.prisma.profile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!profile) {
+      return null;
+    }
+
+    // Equivalente al antiguo user_profiles.name (campo único):
+    // persiste el valor completo en users.firstname sin dividir el string.
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { firstname: name, lastname: '' },
+    });
+
+    return this.findById(userId);
+  }
+
+  private toRecord(profile: {
+    createdAt: Date;
+    user: { id: string; email: string; firstname: string; lastname: string };
+  }): UserProfileRecord {
+    return {
+      // BACKEND.md L85: user_profiles.id = user id
+      id: profile.user.id,
+      email: profile.user.email,
+      name: this.formatDisplayName(
+        profile.user.firstname,
+        profile.user.lastname,
+      ),
+      createdAt: profile.createdAt,
+    };
+  }
+
+  private formatDisplayName(firstname: string, lastname: string): string {
+    return [firstname, lastname]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' ');
   }
 }
