@@ -6,5 +6,8 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "https://api.rss2json.com/v1/",
+  API_URL: "https://api.eliteforge.com/api/",
+  /** Portal web en Hostinger — sustituir cuando se despliegue apps/web */
+  SIGN_UP_URL:
+    "https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up",
 }

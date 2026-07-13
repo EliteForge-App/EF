@@ -354,8 +354,13 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
 - [ ] API real del Feed (publicaciones, likes, comentarios)
 - [ ] Pantallas Perfil, Grupos, Partidos, Reservas
+- [ ] Formulario completo de Register in-app
 - [ ] OAuth real (Google / Facebook SDK)
 - [ ] Eliminar o aislar pantallas demo de Ignite
+
+### Desarrollo en dispositivo físico
+
+- [x] `config.dev.ts` detecta emulador vs móvil real — LAN IP `192.168.1.148` en dispositivo, `10.0.2.2` en emulador Android
 
 ---
 

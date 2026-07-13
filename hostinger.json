@@ -1,0 +1,8 @@
+{
+  "framework": "nextjs",
+  "rootDirectory": "apps/web",
+  "installCommand": "npm ci --workspace=apps/web",
+  "buildCommand": "npm run web:build",
+  "startCommand": "npm run start --workspace=apps/web -- -p $PORT",
+  "nodeVersion": "20"
+}

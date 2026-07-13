@@ -58,3 +58,5 @@ coverage/
 # Misc
 *.pem
 .cache/
+.deploy-staging/
+deploy-hostinger.zip

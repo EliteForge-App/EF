@@ -54,7 +54,14 @@
         }
       }
     ],
-    "expo-build-properties"
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "usesCleartextTraffic": true
+        }
+      }
+    ]
   ],
   "experiments": {
     "tsconfigPaths": true
@@ -62,6 +69,10 @@
   "extra": {
     "ignite": {
       "version": "11.5.0"
+    },
+    "eas": {
+      "projectId": "e70c95c5-f7cf-4ced-879a-a210182852cc"
     }
-  }
+  },
+  "owner": "elite-forge"
 }

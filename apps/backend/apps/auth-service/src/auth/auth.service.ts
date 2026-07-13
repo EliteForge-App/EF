@@ -1,11 +1,13 @@
 import {
   Injectable,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import {
+  AuthMeResponse,
   AuthResponse,
   AuthTokenPayload,
   LoginDto,
@@ -75,10 +77,28 @@ export class AuthService {
     }
   }
 
+  async getMe(userId: string): Promise<AuthMeResponse> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+  }
+
   async validateToken(token: string): Promise<ValidateTokenResponse> {
     try {
       const payload = await this.jwtService.verifyAsync<AuthTokenPayload>(token);
-      return { valid: true, userId: payload.sub, email: payload.email };
+      return {
+        valid: true,
+        userId: payload.sub,
+        email: payload.email,
+      };
     } catch {
       return { valid: false };
     }
@@ -88,14 +108,24 @@ export class AuthService {
     id: string;
     email: string;
     name: string;
+    role: string;
   }): Promise<AuthResponse> {
     try {
-      const payload: AuthTokenPayload = { sub: user.id, email: user.email };
+      const payload: AuthTokenPayload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      };
       const accessToken = await this.jwtService.signAsync(payload);
 
       return {
         accessToken,
-        user: { id: user.id, email: user.email, name: user.name },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
       };
     } catch (error) {
       this.logger.error(

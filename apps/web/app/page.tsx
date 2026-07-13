@@ -1,0 +1,26 @@
+import { LandingNav } from '@/components/landing/landing-nav'
+import { Hero } from '@/components/landing/hero'
+import { PerformanceSection } from '@/components/landing/performance-section'
+import { TournamentsSection } from '@/components/landing/tournaments-section'
+import { MatchFinderSection } from '@/components/landing/match-finder-section'
+import { CommunitySection } from '@/components/landing/community-section'
+import { CourtsSection } from '@/components/landing/courts-section'
+import { DownloadSection } from '@/components/landing/download-section'
+import { FinalCta, LandingFooter } from '@/components/landing/final-cta'
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-background">
+      <LandingNav />
+      <Hero />
+      <PerformanceSection />
+      <TournamentsSection />
+      <MatchFinderSection />
+      <CommunitySection />
+      <CourtsSection />
+      <DownloadSection />
+      <FinalCta />
+      <LandingFooter />
+    </main>
+  )
+}
