@@ -100,7 +100,7 @@ elite-forge-web/
 ### Jugadores (registro público)
 
 1. El usuario se registra en `/auth/sign-up` (nombre, email, posición, contraseña).
-2. Supabase envía un email de confirmación.
+2. (Opcional) Si en el futuro implementamos recuperación/confirmación por email, se añadirá aquí.
 3. El enlace redirige a `/auth/confirm` o `/auth/callback`, que crea la sesión.
 4. Un trigger SQL crea las filas en `profiles` y `player_stats`.
 5. Tras confirmar, se muestra `/auth/confirmed` con enlace para descargar la app móvil.
@@ -135,8 +135,9 @@ Requisito: plan **Business** o **Cloud** con **Node.js Web Apps**.
 4. Añadir variables de entorno **antes de hacer Deploy** (obligatorio):
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+API_GATEWAY_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=/api
+NEXT_PUBLIC_SITE_URL=http://localhost:5173
 NEXT_PUBLIC_SITE_URL=https://tu-dominio.com
 ```
 
@@ -148,23 +149,22 @@ La configuración también está en [`hostinger.json`](hostinger.json).
 
 ### Error "Internal Server Error" (500)
 
-La causa más común es **no haber configurado las variables de entorno de Supabase** en hPanel, o no haber hecho **Redeploy** después de añadirlas.
+La causa más común es **no haber configurado las variables de entorno** en hPanel, o no haber hecho **Redeploy** después de añadirlas.
 
 1. Ve a tu sitio en hPanel → **Deployments** → **Environment variables**
 2. Añade las 3 variables (usa tu URL real de Hostinger como `NEXT_PUBLIC_SITE_URL`):
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+API_GATEWAY_URL=https://TU-API-PUBLICA.com
+NEXT_PUBLIC_API_URL=/api
+NEXT_PUBLIC_SITE_URL=https://TU-DOMINIO.com
 NEXT_PUBLIC_SITE_URL=https://sandybrown-pigeon-607893.hostingersite.com
 ```
 
 3. Pulsa **Redeploy** (obligatorio tras cambiar variables o actualizar código desde GitHub)
 4. Revisa los logs en **Deployments** si sigue fallando
 
-Obtén las credenciales en: [supabase.com/dashboard](https://supabase.com/dashboard) → tu proyecto → **Settings → API** → `Project URL` y `anon public` key.
-
-En Supabase → **Authentication → URL Configuration**, añade también:
+Configura tu API pública en `API_GATEWAY_URL` (por ejemplo `https://api.eliteforge.com`).
 
 - Site URL: `https://sandybrown-pigeon-607893.hostingersite.com`
 - Redirect URLs:
@@ -192,7 +192,7 @@ Verificación: en incógnito, la landing debe mostrar **Registro gratis** + **De
 
 ## Integración con la app móvil
 
-La web y la app móvil comparten el **mismo proyecto Supabase**. Los usuarios registrados en la web pueden iniciar sesión en la app con las mismas credenciales. La web actúa como canal principal de registro y landing; dueños de canchas (`court_owner`, `court_staff`) usan el portal `/admin` en web (bloqueados en la app móvil).
+La app móvil y la web consumen el **mismo backend NestJS**. La web sirve como landing y portal admin; jugadores usan principalmente la app móvil.
 
 Copia de desarrollo en GitLab: `elite-forge-main/web/` (sincronizar tras cada hito desde este repo).
 
@@ -207,8 +207,8 @@ Copia de desarrollo en GitLab: `elite-forge-main/web/` (sincronizar tras cada hi
 | TypeScript | [typescriptlang.org/docs](https://www.typescriptlang.org/docs) |
 | Tailwind CSS | [tailwindcss.com/docs](https://tailwindcss.com/docs) |
 | shadcn/ui | [ui.shadcn.com](https://ui.shadcn.com) |
-| Supabase | [supabase.com/docs](https://supabase.com/docs) |
-| Supabase + Next.js | [supabase.com/docs/guides/auth/server-side/nextjs](https://supabase.com/docs/guides/auth/server-side/nextjs) |
+| NestJS | [docs.nestjs.com](https://docs.nestjs.com) |
+| Prisma | [prisma.io/docs](https://www.prisma.io/docs) |
 | Recharts | [recharts.org](https://recharts.org) |
 | Hostinger Node.js | [hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/) |
 
