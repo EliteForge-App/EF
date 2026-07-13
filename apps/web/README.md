@@ -12,10 +12,10 @@ Landing page, registro de jugadores y portal **admin** B2B para dueños de canch
 |------|-------------|
 | Frontend | Next.js 16, React 19, TypeScript |
 | Estilos | Tailwind CSS 4, shadcn/ui, Lucide Icons |
-| Auth + DB | Supabase (Auth, PostgreSQL, RLS) |
+| Auth + DB | NestJS (API Gateway) + PostgreSQL (Prisma) |
 | Gráficos | Recharts |
 | Analytics | Vercel Analytics |
-| Deploy | GitHub → Hostinger Node.js Web Apps |
+| Deploy | Hostinger Node.js Web Apps |
 
 ---
 
@@ -23,7 +23,6 @@ Landing page, registro de jugadores y portal **admin** B2B para dueños de canch
 
 - **Node.js** >= 20
 - **npm** (recomendado para deploy en Hostinger)
-- Cuenta en [Supabase](https://supabase.com)
 - Plan Hostinger **Business** o **Cloud** con Node.js Web Apps (para producción)
 
 ---
@@ -40,54 +39,19 @@ npm install
 
 ### 2. Variables de entorno
 
-Copia el ejemplo y rellena tus credenciales de Supabase:
+Copia el ejemplo y ajusta URLs según tu entorno:
 
 ```bash
 cp .env.example .env.local
 ```
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+API_GATEWAY_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=/api
+NEXT_PUBLIC_SITE_URL=http://localhost:5173
 ```
 
-### 3. Configurar Supabase
-
-Ejecuta los SQL de [`supabase/migrations/`](supabase/migrations/) en el **SQL Editor** de Supabase, **en este orden**:
-
-| Archivo | Propósito |
-|---------|-----------|
-| `001_initial.sql` | Tablas `profiles` y `player_stats`, trigger y RLS base |
-| `002_fix_signup_trigger.sql` | Fix error "Database error saving new user" + grants |
-| `003_sync_profile_name.sql` | Sincroniza `full_name`, `display_name` y `name` (web + app) |
-| `004_unified_schema.sql` | Esquema unificado web + app móvil (columnas y trigger canónico) |
-| `005_venues_and_admin_rls.sql` | Tabla `venues`, FK `reservations.venue_id`, RLS para admin de canchas |
-
-En **Authentication → URL Configuration**:
-
-| Campo | Valor (desarrollo) |
-|-------|---------------------|
-| Site URL | `http://localhost:3000` |
-| Redirect URLs | `http://localhost:3000/auth/callback`, `http://localhost:3000/auth/confirm`, `http://localhost:3000/admin/**` |
-
-En producción, añade también:
-
-- `https://tu-dominio.com/auth/callback`
-- `https://tu-dominio.com/auth/confirm`
-- `https://tu-dominio.com/admin/**` (portal B2B)
-
-### Plantilla de email «Confirm signup» (Supabase Dashboard)
-
-En **Authentication → Email Templates → Confirm signup**, el enlace debe apuntar a `/auth/confirm`:
-
-```html
-<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/auth/confirmed">Confirmar correo</a>
-```
-
-Si usas `{{ .ConfirmationURL }}`, Supabase redirige a `/auth/callback` tras verificar (también soportado).
-
-### 4. Ejecutar en local
+### 3. Ejecutar en local
 
 ```bash
 npm run dev
