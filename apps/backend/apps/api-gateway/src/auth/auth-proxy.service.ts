@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
-import { MESSAGE_PATTERNS, SERVICE_NAMES } from '@ef/common';
+import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { MESSAGE_PATTERNS, SERVICE_NAMES, toHttpException } from '@ef/common';
 import {
   AuthResponse,
   LoginDto,
@@ -16,22 +16,26 @@ export class AuthProxyService {
   ) {}
 
   login(dto: LoginDto): Promise<AuthResponse> {
-    return firstValueFrom(
-      this.authClient.send<AuthResponse>(MESSAGE_PATTERNS.AUTH.LOGIN, dto),
-    );
+    return this.send<AuthResponse>(MESSAGE_PATTERNS.AUTH.LOGIN, dto);
   }
 
   register(dto: RegisterDto): Promise<AuthResponse> {
-    return firstValueFrom(
-      this.authClient.send<AuthResponse>(MESSAGE_PATTERNS.AUTH.REGISTER, dto),
-    );
+    return this.send<AuthResponse>(MESSAGE_PATTERNS.AUTH.REGISTER, dto);
   }
 
   validateToken(token: string): Promise<ValidateTokenResponse> {
+    return this.send<ValidateTokenResponse>(
+      MESSAGE_PATTERNS.AUTH.VALIDATE_TOKEN,
+      { token },
+    );
+  }
+
+  private send<T>(pattern: string, payload: unknown): Promise<T> {
     return firstValueFrom(
-      this.authClient.send<ValidateTokenResponse>(
-        MESSAGE_PATTERNS.AUTH.VALIDATE_TOKEN,
-        { token },
+      this.authClient.send<T>(pattern, payload).pipe(
+        catchError((error: unknown) =>
+          throwError(() => toHttpException(error)),
+        ),
       ),
     );
   }
