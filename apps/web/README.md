@@ -79,18 +79,16 @@ elite-forge-web/
 ├── app/
 │   ├── page.tsx              # Landing
 │   ├── auth/                 # Registro, confirmación, recuperar contraseña
-│   └── admin/                # Portal B2B (court_owner, court_staff, admin, business)
+│   └── admin/                # Portal B2B (Empresario, Administrador)
 ├── components/
 │   ├── ui/                   # Componentes shadcn/ui
 │   ├── landing/              # Secciones de la landing
 │   └── admin/                # Sidebar y header del portal admin
 ├── lib/
 │   ├── admin/                # Roles y sesión admin
-│   ├── dal/admin/            # DAL reservas y venues (Supabase SSR)
-│   └── supabase/             # Clientes Supabase (browser, server, middleware)
+│   ├── dal/admin/            # DAL reservas y venues (API Gateway)
 ├── public/                   # Assets estáticos
-├── supabase/migrations/      # Esquema SQL
-├── middleware.ts             # Sesión Supabase + guards /admin
+├── middleware.ts             # Cookie ef_token + guards /admin
 ├── hostinger.json            # Config de deploy en Hostinger
 └── next.config.mjs           # Cache-Control anti-caché para HTML
 ```
@@ -112,12 +110,8 @@ Los jugadores **no tienen panel web**; usan la app móvil con las mismas credenc
 ### Administradores de canchas y empresarios
 
 1. Acceden a `/admin/login` (no aparece en la navegación pública).
-2. Tras iniciar sesión, el middleware valida `profiles.role`:
-   - `court_owner` / `court_staff` → `/admin/reservas`
-   - `admin` / `business` → `/admin/metricas`
-3. Los roles `player`, `club` y `judge` reciben acceso denegado en el portal admin.
-
-Asigna `court_owner` manualmente en Supabase al principio; el CTA «Licencia Manager» en la landing apunta a `/admin/login`.
+2. Tras iniciar sesión, la web guarda un `accessToken` en la cookie `ef_token`.
+3. El middleware exige esa cookie para cualquier ruta `/admin/*`.
 
 ---
 
