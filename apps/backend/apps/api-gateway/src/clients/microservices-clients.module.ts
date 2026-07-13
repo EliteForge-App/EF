@@ -30,6 +30,18 @@ import { SERVICE_NAMES } from '@ef/common';
           },
         }),
       },
+      {
+        name: SERVICE_NAMES.VENUES,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('VENUES_SERVICE_HOST', 'localhost'),
+            port: config.get<number>('VENUES_SERVICE_PORT', 3003),
+          },
+        }),
+      },
     ]),
   ],
   exports: [ClientsModule],

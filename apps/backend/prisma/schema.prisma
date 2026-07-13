@@ -30,7 +30,9 @@ model User {
   roleId Int
   role   Role @relation(fields: [roleId], references: [id])
 
-  profile Profile?
+  profile      Profile?
+  ownedVenues  Venue[]       @relation("VenueOwner")
+  reservations Reservation[] @relation("ReservationUser")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,4 +55,47 @@ model Profile {
   updatedAt DateTime @updatedAt
 
   @@map("profiles")
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+model Venue {
+  id                String   @id @default(uuid()) @db.Uuid
+  ownerId           String   @db.Uuid
+  owner             User     @relation("VenueOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  name              String
+  address           String?
+  pricePerHourCents Int      @default(0)
+  availability      Json     @default("{}")
+  reservations      Reservation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@map("venues")
+}
+
+model Reservation {
+  id        String            @id @default(uuid()) @db.Uuid
+  userId    String            @db.Uuid
+  user      User              @relation("ReservationUser", fields: [userId], references: [id], onDelete: Cascade)
+  venueId   String?           @db.Uuid
+  venue     Venue?            @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  venueName String
+  startsAt  DateTime
+  endsAt    DateTime
+  status    ReservationStatus @default(pending)
+  notes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([userId])
+  @@map("reservations")
 }

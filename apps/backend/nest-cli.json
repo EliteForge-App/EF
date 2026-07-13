@@ -37,6 +37,15 @@
         "tsConfigPath": "apps/users-service/tsconfig.app.json"
       }
     },
+    "venues-service": {
+      "type": "application",
+      "root": "apps/venues-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/venues-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/venues-service/tsconfig.app.json"
+      }
+    },
     "common": {
       "type": "library",
       "root": "libs/common",

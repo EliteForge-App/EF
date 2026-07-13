@@ -22,4 +22,9 @@ export class AuthController {
   validateToken(@Payload() dto: ValidateTokenDto) {
     return this.authService.validateToken(dto.token);
   }
+
+  @MessagePattern(MESSAGE_PATTERNS.AUTH.GET_ME)
+  getMe(@Payload() data: { userId: string }) {
+    return this.authService.getMe(data.userId);
+  }
 }

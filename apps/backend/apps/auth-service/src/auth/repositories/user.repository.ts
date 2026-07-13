@@ -6,7 +6,6 @@ export interface CreateUserData {
   email: string;
   passwordHash: string;
   name: string;
-  /** Rol explícito cuando el formulario de registro lo envíe (futuro). */
   registrationRole?: string;
 }
 
@@ -15,6 +14,7 @@ export interface AuthUserRecord {
   email: string;
   passwordHash: string;
   name: string;
+  role: string;
 }
 
 @Injectable()
@@ -22,12 +22,18 @@ export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByEmail(email: string): Promise<AuthUserRecord | null> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { role: true },
+    });
     return user ? this.toAuthUserRecord(user) : null;
   }
 
   async findById(id: string): Promise<AuthUserRecord | null> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { role: true },
+    });
     return user ? this.toAuthUserRecord(user) : null;
   }
 
@@ -43,6 +49,8 @@ export class UserRepository {
       );
     }
 
+    const alias = await this.buildUniqueAlias(data.email, data.name);
+
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
@@ -50,10 +58,38 @@ export class UserRepository {
         firstname: data.name,
         lastname: '',
         roleId: role.id,
+        profile: {
+          create: { alias },
+        },
       },
+      include: { role: true },
     });
 
     return this.toAuthUserRecord(user);
+  }
+
+  private async buildUniqueAlias(email: string, name: string): Promise<string> {
+    const raw =
+      name
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '') ||
+      email
+        .split('@')[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '');
+
+    const base = (raw || 'user').slice(0, 24);
+    let alias = base;
+    let suffix = 1;
+
+    while (await this.prisma.profile.findUnique({ where: { alias } })) {
+      alias = `${base}_${suffix}`;
+      suffix += 1;
+    }
+
+    return alias;
   }
 
   private toAuthUserRecord(user: {
@@ -62,6 +98,7 @@ export class UserRepository {
     passwordHash: string;
     firstname: string;
     lastname: string;
+    role: { name: string };
   }): AuthUserRecord {
     return {
       id: user.id,
@@ -71,6 +108,7 @@ export class UserRepository {
         .map((part) => part.trim())
         .filter(Boolean)
         .join(' '),
+      role: user.role.name,
     };
   }
 }

@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { MESSAGE_PATTERNS, SERVICE_NAMES, toHttpException } from '@ef/common';
 import {
+  AuthMeResponse,
   AuthResponse,
   LoginDto,
   RegisterDto,
@@ -28,6 +29,10 @@ export class AuthProxyService {
       MESSAGE_PATTERNS.AUTH.VALIDATE_TOKEN,
       { token },
     );
+  }
+
+  getMe(userId: string): Promise<AuthMeResponse> {
+    return this.send<AuthMeResponse>(MESSAGE_PATTERNS.AUTH.GET_ME, { userId });
   }
 
   private send<T>(pattern: string, payload: unknown): Promise<T> {

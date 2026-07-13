@@ -18,6 +18,7 @@ export class RegisterDto extends LoginDto {
 export interface AuthTokenPayload {
   sub: string;
   email: string;
+  role: string;
 }
 
 export interface AuthResponse {
@@ -26,7 +27,15 @@ export interface AuthResponse {
     id: string;
     email: string;
     name: string;
+    role: string;
   };
+}
+
+export interface AuthMeResponse {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
 }
 
 export interface ValidateTokenDto {

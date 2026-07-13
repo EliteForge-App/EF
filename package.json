@@ -5,16 +5,20 @@
   "description": "Monorepo EF — React Native (Ignite + Tamagui) + NestJS Microservicios",
   "workspaces": [
     "apps/mobile",
-    "apps/backend"
+    "apps/backend",
+    "apps/web"
   ],
   "scripts": {
     "mobile": "npm run start --workspace=apps/mobile",
     "mobile:android": "npm run android --workspace=apps/mobile",
     "mobile:ios": "npm run ios --workspace=apps/mobile",
+    "web": "npm run dev --workspace=apps/web",
+    "web:build": "npm run build --workspace=apps/web",
     "backend:build": "npm run build --workspace=apps/backend",
     "backend:gateway": "npm run start:gateway --workspace=apps/backend",
     "backend:auth": "npm run start:auth --workspace=apps/backend",
     "backend:users": "npm run start:users --workspace=apps/backend",
+    "backend:venues": "npm run start:venues --workspace=apps/backend",
     "docker:up": "docker compose -f infrastructure/docker/docker-compose.yml up -d",
     "docker:down": "docker compose -f infrastructure/docker/docker-compose.yml down",
     "docker:build": "docker compose -f infrastructure/docker/docker-compose.yml build"
