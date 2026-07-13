@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
+import Config from "@/config"
 import { api } from "@/services/api"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 import { openLinkInBrowser } from "@/utils/openLinkInBrowser"
@@ -22,8 +23,6 @@ import { openLinkInBrowser } from "@/utils/openLinkInBrowser"
 type LoginScreenProps = AppStackScreenProps<"Login">
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-const SIGN_UP_URL = "https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up"
 
 export const LoginScreen: FC<LoginScreenProps> = () => {
   const [username, setUsername] = useState("")
@@ -95,7 +94,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
   }, [isLoading, password, setAuthEmail, setAuthToken, username])
 
   const handleCreateAccount = useCallback(() => {
-    openLinkInBrowser(SIGN_UP_URL)
+    openLinkInBrowser(Config.SIGN_UP_URL)
   }, [])
 
   return (
