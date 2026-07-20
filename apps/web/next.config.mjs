@@ -8,6 +8,8 @@ const tracingRoot = fs.existsSync(path.join(monorepoRoot, 'package.json'))
   ? monorepoRoot
   : webRoot
 
+const isProd = process.env.NODE_ENV === 'production'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   turbopack: {
@@ -29,7 +31,7 @@ const nextConfig = {
     ]
   },
   async headers() {
-    return [
+    const headers = [
       {
         source:
           '/((?!_next/static|_next/image|favicon.ico|icon.svg|hero-player.svg).*)',
@@ -41,7 +43,13 @@ const nextConfig = {
           { key: 'Pragma', value: 'no-cache' },
         ],
       },
-      {
+    ]
+
+    // Solo en prod. En dev, Next gestiona /_next/static; si forzamos
+    // immutable + nombres de chunk estables de Turbopack, el browser
+    // conserva JS viejo (p. ej. sidebar sin Analíticas).
+    if (isProd) {
+      headers.push({
         source: '/_next/static/:path*',
         headers: [
           {
@@ -49,8 +57,10 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
-    ]
+      })
+    }
+
+    return headers
   },
 }
 

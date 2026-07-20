@@ -10,7 +10,9 @@ export default function AuthLayout({
     <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b border-border/60">
         <div className="mx-auto flex max-w-7xl items-center px-4 py-4 sm:px-6">
-          <Logo />
+          <Link href="/" className="inline-flex items-center">
+            <Logo />
+          </Link>
         </div>
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-12">

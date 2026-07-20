@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
+/** Solo imagen. El enlace lo pone el padre (`Link`) para no anidar `<a>`. */
 export function Logo({ className = '' }: { className?: string }) {
   return (
-    <Link href="/" className={`inline-flex items-center ${className}`}>
+    <span className={`inline-flex items-center ${className}`}>
       <Image
         src="/elite-forge-logo.png"
         alt="Elite Forge"
@@ -12,6 +12,6 @@ export function Logo({ className = '' }: { className?: string }) {
         className="h-12 w-auto object-contain sm:h-14"
         priority
       />
-    </Link>
+    </span>
   )
 }
