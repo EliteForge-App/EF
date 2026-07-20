@@ -57,7 +57,7 @@ const en = {
   },
   registerScreen: {
     title: "Create account",
-    subtitle: "Join Elite Forge and forge your legend on the pitch.",
+    subtitle: "Opening the sign-up form in your browser…",
   },
   feedScreen: {
     title: "Feed",

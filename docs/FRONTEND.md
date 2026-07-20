@@ -195,7 +195,7 @@ Export centralizado: `app/components/ui/index.ts`
 ### Comportamiento
 
 - Login real vía `api.login()`; token en `AuthContext` (MMKV) → redirección automática a **Feed**
-- `handleCreateAccount` abre registro web externo (Hostinger)
+- `handleCreateAccount` abre `Config.SIGN_UP_URL` → `apps/web` `/auth/sign-up` (NestJS/Prisma)
 - Botones Gmail/Facebook (solo UI)
 
 ---
@@ -295,6 +295,23 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
 ## Registro de cambios (sesión de implementación)
 
+### 2026-07-17 — Fix Android monorepo (react-native-worklets)
+
+- [x] Causa: `android/build/generated/autolinking/autolinking.json` apuntaba a `apps/mobile/node_modules/*` (hoist npm workspaces → raíz)
+- [x] `android/settings.gradle` y `app/build.gradle` resuelven Node desde `apps/mobile` (paquete workspace)
+- [x] `react-native.config.js` + `experiments.autolinkingModuleResolution`
+- [x] Eliminado `apps/mobile/package-lock.json` / `node_modules` anidados
+- [x] Workaround Gradle 9 + foojay 0.5.0 (`scripts/patch-rn-gradle-foojay.js` + `postinstall`)
+- [x] `assembleDebug` OK (`npx expo run:android`)
+
+### 2026-07-17 — Registro web NestJS (`apps/web`)
+
+- [x] `SIGN_UP_URL` en `config.dev.ts` usa el mismo host que la API (`getDevApiHost`) → `http://<host>:5173/auth/sign-up`
+- [x] `RegisterScreen` abre el formulario web y vuelve al login (ya no es placeholder con solo “atrás”)
+- [x] `openLinkInBrowser` siempre intenta `Linking.openURL` (fix Android)
+- [x] `SIGN_UP_URL` en `config.prod.ts` deja Hostinger (Supabase) y apunta a `apps/web` (`http://192.168.1.132:5173/auth/sign-up` hasta deploy público)
+- [x] `DEV_LAN_HOST` actualizado a `192.168.1.132`
+
 ### Infraestructura y base
 
 - [x] Monorepo con app móvil Ignite en `apps/mobile/`
@@ -309,12 +326,12 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] Fondo global `#424242` (revertido desde gris `#9C9C9C`)
 - [x] Tarjeta elevada `#363636` con franja bicolor superior
 - [x] Inputs con labels, placeholders i18n y toggle de contraseña
-- [x] Enlace "Crear cuenta" → `https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up` (`openLinkInBrowser`)
+- [x] Enlace "Crear cuenta" → `Config.SIGN_UP_URL` (`apps/web` `/auth/sign-up` vía `openLinkInBrowser`)
 - [x] Botones Gmail/Facebook (solo UI)
 - [x] `handleLogin` conectado al API Gateway — `api.login()`, token en `AuthContext` (MMKV)
-- [x] `handleCreateAccount` abre registro web externo (Hostinger)
+- [x] `handleCreateAccount` abre registro web (`apps/web`); en dev usa el mismo host que la API
 - [x] Validación email/contraseña, errores i18n, estado de carga
-- [x] `config.dev.ts` apunta a `http://localhost:3000/api/` (Android emulator: `10.0.2.2`)
+- [x] `config.dev.ts` API `http://<host>:3000/api/` y sign-up `http://<host>:5173/auth/sign-up`
 
 ### Pantalla Login
 
@@ -419,4 +436,4 @@ Al implementar algo nuevo:
 
 ---
 
-*Última actualización: login conectado al backend vía API Gateway.*
+*Última actualización: “Crear cuenta” abre apps/web `/auth/sign-up` (NestJS/Prisma).*

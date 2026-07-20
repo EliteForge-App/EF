@@ -59,7 +59,7 @@ const es: Translations = {
   },
   registerScreen: {
     title: "Crear cuenta",
-    subtitle: "Únete a Elite Forge y forja tu leyenda en la cancha.",
+    subtitle: "Abriendo el formulario de registro en el navegador…",
   },
   feedScreen: {
     title: "Feed",

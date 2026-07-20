@@ -138,7 +138,7 @@ La **creación de cuentas** se realiza en el portal web de Hostinger, no desde l
 
 | Canal | URL / endpoint | Uso |
 |-------|----------------|-----|
-| **Web (principal)** | https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up | Registro de nuevos usuarios |
+| **Web (principal)** | http://localhost:5173/auth/sign-up (`apps/web`) | Registro de nuevos usuarios (NestJS/Prisma) |
 | App móvil | Enlace "Crear cuenta" en Login → abre la URL anterior en el navegador | Sin formulario nativo de registro |
 | API Gateway | `POST /api/auth/register` | Disponible para integraciones; la app móvil no lo consume directamente |
 
@@ -236,13 +236,12 @@ Ver `.env.example` en la raíz del monorepo.
 
 ## Registro de cambios
 
-### 2026-07-04 — Registro de usuarios vía portal web (Hostinger)
+### 2026-07-04 — Registro de usuarios vía portal web
 
-- La app móvil deja de navegar a `RegisterScreen` al pulsar "Crear cuenta".
-- El enlace abre `https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up` en el navegador externo.
-- URL usada directamente en `LoginScreen.tsx`: `https://sandybrown-pigeon-607893.hostingersite.com/auth/sign-up`
-- **Sin cambios de código backend**; `POST /api/auth/register` sigue disponible en el API Gateway.
-- `RegisterScreen` permanece en el stack por compatibilidad (placeholder).
+- La app móvil deja de navegar a un formulario nativo al pulsar "Crear cuenta".
+- El enlace abre `Config.SIGN_UP_URL` → `apps/web` `/auth/sign-up` (NestJS/Prisma).
+- En desarrollo: `http://<host>:5173/auth/sign-up`.
+- **Sin cambios de lógica backend**; `POST /api/auth/register` sigue disponible en el API Gateway.
 
 ### 2026-07-04 — Integración mobile ↔ auth (sin cambios de código backend)
 
