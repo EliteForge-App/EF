@@ -1,16 +1,23 @@
 import { useState } from "react"
-import { Platform, Pressable, View, type NativeSyntheticEvent, type TextInputFocusEventData } from "react-native"
+import {
+  Platform,
+  Pressable,
+  View,
+  type NativeSyntheticEvent,
+  type TextInputFocusEventData,
+} from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import Animated from "react-native-reanimated"
 import {
   Input as TamaguiInput,
   Label,
-  Text,
   XStack,
   YStack,
   type InputProps as TamaguiInputProps,
 } from "tamagui"
 
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
+import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
 export interface AppInputProps extends Omit<TamaguiInputProps, "value" | "onChangeText"> {
   label: string
@@ -18,6 +25,8 @@ export interface AppInputProps extends Omit<TamaguiInputProps, "value" | "onChan
   onChangeText: (text: string) => void
   secureTextEntry?: boolean
 }
+
+const TOGGLE_SIZE = 44
 
 export function Input({
   label,
@@ -58,6 +67,7 @@ export function Input({
             borderColor={focused ? "$efEmerald" : "$efCarbonBorder"}
             rounded="$3"
             ai="center"
+            minHeight={TOGGLE_SIZE}
             animation="quick"
             hoverStyle={
               Platform.OS === "web"
@@ -78,17 +88,32 @@ export function Input({
               borderWidth={0}
               bg="transparent"
               fontSize="$4"
+              height={TOGGLE_SIZE}
               px="$3"
-              py="$3"
+              py={0}
+              pr={secureTextEntry ? "$1" : "$3"}
               onFocus={handleFocus}
               onBlur={handleBlur}
               {...props}
             />
             {secureTextEntry ? (
-              <Pressable onPress={() => setHidden((v) => !v)} hitSlop={8}>
-                <Text color="$efEmerald" fontSize="$3" fontWeight="600" px="$3">
-                  {hidden ? "Ver" : "Ocultar"}
-                </Text>
+              <Pressable
+                onPress={() => setHidden((v) => !v)}
+                accessibilityRole="button"
+                accessibilityLabel={hidden ? "Mostrar contraseña" : "Ocultar contraseña"}
+                hitSlop={4}
+                style={{
+                  width: TOGGLE_SIZE,
+                  height: TOGGLE_SIZE,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons
+                  name={hidden ? "eye-outline" : "eye-off-outline"}
+                  size={22}
+                  color={eliteForgeColors.emerald}
+                />
               </Pressable>
             ) : null}
           </XStack>

@@ -44,9 +44,11 @@ export function Button({
   children,
   onPress,
   width,
+  flex,
   ...props
 }: AppButtonProps) {
   const motion = useInteractiveMotion("button")
+  const fillWidth = width === "100%" || flex === 1
 
   return (
     <Pressable
@@ -55,9 +57,15 @@ export function Button({
       onPressOut={motion.onPressOut}
       onHoverIn={motion.onHoverIn}
       onHoverOut={motion.onHoverOut}
-      style={{ width: width === "100%" ? "100%" : undefined, alignSelf: width === "100%" ? "stretch" : undefined }}
+      style={{
+        flex: typeof flex === "number" ? flex : undefined,
+        width: fillWidth && flex === undefined ? "100%" : undefined,
+        alignSelf: fillWidth && flex === undefined ? "stretch" : undefined,
+        minWidth: typeof flex === "number" ? 120 : 0,
+        flexShrink: typeof flex === "number" ? 1 : undefined,
+      }}
     >
-      <Animated.View style={motion.animatedStyle}>
+      <Animated.View style={[{ flex: typeof flex === "number" ? 1 : undefined }, motion.animatedStyle]}>
         <TamaguiButton
           pointerEvents="none"
           animation="quick"
@@ -67,7 +75,7 @@ export function Button({
           px="$4"
           py="$3"
           height="$5"
-          width={width}
+          width={flex !== undefined ? "100%" : width}
           {...variantStyles[variant]}
           {...props}
         >

@@ -5,7 +5,6 @@ import { ScrollView, Text, XStack, YStack } from "tamagui"
 import {
   AuthFormCard,
   Button,
-  Divider,
   EliteForgeLogo,
   Input,
   LinkText,
@@ -97,6 +96,12 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
     openLinkInBrowser(Config.SIGN_UP_URL)
   }, [])
 
+  /** Solo en desarrollo: entra al Feed sin API para trabajar UI. */
+  const handleUiPreview = useCallback(() => {
+    setAuthEmail("ui-preview@eliteforge.local")
+    setAuthToken("dev-ui-preview-token")
+  }, [setAuthEmail, setAuthToken])
+
   return (
     <YStack flex={1} backgroundColor={eliteForgeColors.carbon}>
       <StatusBar barStyle="light-content" backgroundColor={eliteForgeColors.carbon} />
@@ -175,41 +180,53 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
                   </Text>
                 ) : null}
 
-                <Button width="100%" onPress={handleLogin} disabled={isLoading} opacity={isLoading ? 0.7 : 1}>
+                <Button
+                  width="100%"
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                  opacity={isLoading ? 0.7 : 1}
+                >
                   {isLoading
                     ? translate("loginScreen:signingIn")
                     : translate("loginScreen:signInButton")}
                 </Button>
 
-                <LinkText
-                  prompt={translate("loginScreen:createAccountPrompt")}
-                  linkLabel={translate("loginScreen:createAccountLink")}
-                  onPress={handleCreateAccount}
-                />
+                {/* Crear cuenta + redes a la derecha */}
+                <XStack
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={isSmallScreen ? 10 : 12}
+                  flexWrap="wrap"
+                >
+                  <LinkText
+                    prompt={translate("loginScreen:createAccountPrompt")}
+                    linkLabel={translate("loginScreen:createAccountLink")}
+                    onPress={handleCreateAccount}
+                  />
+                  <XStack alignItems="center" gap={isSmallScreen ? 8 : 10}>
+                    <SocialButton
+                      iconOnly
+                      provider="facebook"
+                      label={translate("loginScreen:facebookButton")}
+                      onPress={() => undefined}
+                    />
+                    <SocialButton
+                      iconOnly
+                      provider="google"
+                      label={translate("loginScreen:googleButton")}
+                      onPress={() => undefined}
+                    />
+                  </XStack>
+                </XStack>
+
+                {__DEV__ ? (
+                  <Button variant="outline" width="100%" onPress={handleUiPreview}>
+                    {translate("loginScreen:uiPreviewButton")}
+                  </Button>
+                ) : null}
               </YStack>
             </AuthFormCard>
-
-            <YStack width="100%" gap={isSmallScreen ? 10 : 12}>
-              <Divider label={translate("loginScreen:continueWith")} />
-
-              <XStack width="100%" gap={isSmallScreen ? 8 : 10}>
-                <SocialButton
-                  compact
-                  provider="google"
-                  label={translate("loginScreen:googleButton")}
-                  compactLabel={translate("loginScreen:googleButtonShort")}
-                  onPress={() => undefined}
-                />
-
-                <SocialButton
-                  compact
-                  provider="facebook"
-                  label={translate("loginScreen:facebookButton")}
-                  compactLabel={translate("loginScreen:facebookButtonShort")}
-                  onPress={() => undefined}
-                />
-              </XStack>
-            </YStack>
           </YStack>
         </ScrollView>
       </KeyboardAvoidingView>

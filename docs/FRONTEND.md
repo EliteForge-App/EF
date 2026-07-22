@@ -158,8 +158,8 @@ La tarjeta de login incluye una franja superior de 3px: mitad esmeralda, mitad n
 | Componente | Archivo | Descripción |
 |------------|---------|-------------|
 | `Button` | `Button.tsx` | Variantes: primary, secondary, outline, ghost. Animación press/hover |
-| `Input` | `Input.tsx` | Label, campo, toggle Ver/Ocultar en contraseña. Focus/hover animado |
-| `SocialButton` | `SocialButton.tsx` | Google y Facebook. Modo `compact` para fila horizontal |
+| `Input` | `Input.tsx` | Label, campo, toggle ojo (mostrar/ocultar) en contraseña. Focus/hover animado |
+| `SocialButton` | `SocialButton.tsx` | Google y Facebook. `iconOnly` minimalista (40×40); modos `compact` / full |
 | `AuthFormCard` | `AuthFormCard.tsx` | Contenedor del formulario con barra bicolor y hover |
 | `EliteForgeLogo` | `Logo.tsx` | Logo de marca responsivo |
 | `Divider` | `Divider.tsx` | Separador con etiqueta ("o continuar con") |
@@ -187,16 +187,17 @@ Export centralizado: `app/components/ui/index.ts`
 2. **Subtítulo** i18n (`loginScreen:subtitle`)
 3. **AuthFormCard** con:
    - Input usuario
-   - Input contraseña (secure + Ver/Ocultar)
-   - Botón Sign in (conectado al API)
-   - Enlace a Register
-4. **Divider** + botones sociales **Gmail** y **Facebook** en **una fila** (modo compact)
+   - Input contraseña (secure + icono ojo)
+   - Botón **Iniciar sesión** solo a ancho completo
+   - Fila centrada: **Crear cuenta** + iconos Facebook/Gmail a la derecha
+   - `AuthFormCard` a ancho completo (padding ~4%)
 
 ### Comportamiento
 
 - Login real vía `api.login()`; token en `AuthContext` (MMKV) → redirección automática a **Feed**
 - `handleCreateAccount` abre `Config.SIGN_UP_URL` → `apps/web` `/auth/sign-up` (NestJS/Prisma)
 - Botones Gmail/Facebook (solo UI)
+- **Bypass UI (`__DEV__`)**: botón «Entrar sin backend (UI)» guarda un token fake en MMKV y abre **Feed** sin API
 
 ---
 
@@ -209,18 +210,20 @@ Destino post-login. Estilo tipo **Facebook**: publicaciones de jugadores, anunci
 ### Layout
 
 - `react-native-drawer-layout` — menú lateral (~82% ancho)
-- `FeedNavbar` — barra bicolor, botón menú animado, logo, miniatura de perfil del usuario
-- `FlatList` responsiva con `useResponsiveLayout()`
+- `FeedNavbar` — barra moderna bicolor; logo grande que **se colapsa al scroll** (58→34)
+- `Animated.FlatList` + `useSharedValue` / `useAnimatedScrollHandler` (Reanimated)
 - Fondo `#424242`
 
 ### Componentes del Feed
 
 | Componente | Descripción |
 |------------|-------------|
-| `FeedNavbar` | Navbar interactivo; logo centrado; avatar abre el drawer |
-| `FeedDrawer` | Perfil, Grupos, Partidos, Reservas (próximamente) + cerrar sesión |
-| `FeedComposer` | “¿Qué quieres compartir?” + accesos Foto / Video / Partido (stub) |
-| `FeedPostCard` | Tarjeta de publicación: texto, imagen, video, likes/comentarios |
+| `FeedNavbar` | Navbar abatible; logo animado; menú + avatar |
+| `FeedDrawer` | Perfil, Grupos, Partidos, Reservas + logout (iconos Ionicons) |
+| `FeedComposer` | Composer con iconos modernos + margen inferior; abre modal |
+| `FeedComposeModal` | Popup estilo Facebook/X para crear publicación (UI stub) |
+| `FeedShareSheet` | Bottom sheet al pulsar Compartir en un post |
+| `FeedPostCard` | Publicación con acciones (heart / chat / share) en iconos |
 | `FeedAvatar` | Avatar circular con iniciales y animación press |
 | `mockFeedPosts.ts` | Datos mock (jugadores + anuncios Elite Forge) |
 
@@ -288,6 +291,7 @@ Claves relevantes del login en `app/i18n/*.ts`:
 | `loginScreen:googleButtonShort` | Gmail (UI compacta) |
 | `loginScreen:facebookButton` | Continuar con Facebook |
 | `loginScreen:facebookButtonShort` | Facebook |
+| `loginScreen:uiPreviewButton` | Entrar sin backend (UI) — solo `__DEV__` |
 
 Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
@@ -309,8 +313,8 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] `SIGN_UP_URL` en `config.dev.ts` usa el mismo host que la API (`getDevApiHost`) → `http://<host>:5173/auth/sign-up`
 - [x] `RegisterScreen` abre el formulario web y vuelve al login (ya no es placeholder con solo “atrás”)
 - [x] `openLinkInBrowser` siempre intenta `Linking.openURL` (fix Android)
-- [x] `SIGN_UP_URL` en `config.prod.ts` deja Hostinger (Supabase) y apunta a `apps/web` (`http://192.168.1.132:5173/auth/sign-up` hasta deploy público)
-- [x] `DEV_LAN_HOST` actualizado a `192.168.1.132`
+- [x] `SIGN_UP_URL` en `config.prod.ts` deja Hostinger (Supabase) y apunta a `apps/web`
+- [x] `DEV_LAN_HOST` según red local del desarrollador
 
 ### Infraestructura y base
 
@@ -326,26 +330,26 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] Fondo global `#424242` (revertido desde gris `#9C9C9C`)
 - [x] Tarjeta elevada `#363636` con franja bicolor superior
 - [x] Inputs con labels, placeholders i18n y toggle de contraseña
+- [x] Toggle contraseña con icono Ionicons (`eye-outline` / `eye-off-outline`) centrado en la caja
+- [x] Bypass `__DEV__` «Entrar sin backend (UI)» en `LoginScreen` para previsualizar Feed sin API
+- [x] Login: «Iniciar sesión» solo a ancho completo; Facebook/Gmail a la derecha de «Crear cuenta»
 - [x] Enlace "Crear cuenta" → `Config.SIGN_UP_URL` (`apps/web` `/auth/sign-up` vía `openLinkInBrowser`)
 - [x] Botones Gmail/Facebook (solo UI)
 - [x] `handleLogin` conectado al API Gateway — `api.login()`, token en `AuthContext` (MMKV)
 - [x] `handleCreateAccount` abre registro web (`apps/web`); en dev usa el mismo host que la API
 - [x] Validación email/contraseña, errores i18n, estado de carga
 - [x] `config.dev.ts` API `http://<host>:3000/api/` y sign-up `http://<host>:5173/auth/sign-up`
-
-### Pantalla Login
-
+- [x] `SocialButton.iconOnly` (40×40) junto a «Crear cuenta»
 - [x] Nuevo logo oficial en `docs/assets/` y `apps/mobile/assets/images/`
 - [x] Documentación de composición en `ELITE_FORGE.md`
 - [x] PNG con transparencia real (RGBA) — corrección de fondo negro aplanado al exportar
-- [x] Limpieza de huecos en letras (ej. interior de la "O" en FORGE)
 - [x] Eliminación del título "Login" — logo como protagonista visual
 - [x] Aumento de tamaño del logo (62–68% ancho, máx. 280–320px)
 
 ### Botones sociales
 
 - [x] Modo `compact`: icono + etiqueta corta (Gmail / Facebook)
-- [x] Ambos en **una fila** (`XStack` con `flex: 1`)
+- [x] Modo `iconOnly` para la fila de login
 - [x] Claves i18n `*ButtonShort` para etiquetas compactas
 
 ### Animaciones
@@ -366,6 +370,11 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] Mock data: publicaciones de jugadores + anuncios Elite Forge (`mockFeedPosts.ts`)
 - [x] i18n `feedScreen` / `feedDrawer` (7 idiomas)
 - [x] Sin backend — solo UI y datos locales
+- [x] `FeedNavbar` colapsable al scroll (logo 58→34) + estilo más moderno
+- [x] Composer con más margen inferior; emojis → Ionicons
+- [x] `FeedComposeModal` y `FeedShareSheet` (popups estilo Facebook/X)
+- [x] Acciones del post y drawer con iconos modernos (sin emojis)
+- [x] `FeedComposeModal` compacto, anclado sobre el teclado
 
 ### Pendiente / fuera de alcance actual
 
@@ -377,7 +386,7 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
 ### Desarrollo en dispositivo físico
 
-- [x] `config.dev.ts` detecta emulador vs móvil real — LAN IP `192.168.1.148` en dispositivo, `10.0.2.2` en emulador Android
+- [x] `config.dev.ts` detecta emulador vs móvil real — LAN IP local en dispositivo, `10.0.2.2` en emulador Android
 
 ---
 
@@ -436,4 +445,4 @@ Al implementar algo nuevo:
 
 ---
 
-*Última actualización: “Crear cuenta” abre apps/web `/auth/sign-up` (NestJS/Prisma).*
+*Última actualización: Feed compose/share modals + login con redes a la derecha de crear cuenta.*
