@@ -2,6 +2,7 @@
 
 import { register } from '@/lib/api/auth'
 import { ApiError } from '@/lib/api/client'
+import { SocialAuthButtons } from '@/components/auth/social-auth-buttons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -62,7 +63,7 @@ export default function SignUpPage() {
       if (err instanceof ApiError) {
         setError(
           err.status === 401
-            ? 'Este correo ya está registrado. Prueba a iniciar sesión.'
+            ? 'Este correo ya está registrado. Usa otro o contacta soporte.'
             : err.message,
         )
       } else {
@@ -138,22 +139,25 @@ export default function SignUpPage() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button
-          type="submit"
-          className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <SocialAuthButtons />
+          <Button
+            type="submit"
+            className="h-11 min-w-0 flex-1 font-heading font-semibold uppercase tracking-wide"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
+          </Button>
+        </div>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        ¿Ya tienes cuenta?{' '}
+        ¿Administras una cancha?{' '}
         <Link
-          href="/auth/login"
+          href="/admin/login"
           className="font-medium text-primary hover:underline"
         >
-          Inicia sesión
+          Acceder al dashboard
         </Link>
       </p>
     </div>

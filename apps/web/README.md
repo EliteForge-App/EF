@@ -99,19 +99,17 @@ elite-forge-web/
 
 ### Jugadores (registro público)
 
-1. El usuario se registra en `/auth/sign-up` (nombre, email, posición, contraseña).
-2. (Opcional) Si en el futuro implementamos recuperación/confirmación por email, se añadirá aquí.
-3. El enlace redirige a `/auth/confirm` o `/auth/callback`, que crea la sesión.
-4. Un trigger SQL crea las filas en `profiles` y `player_stats`.
-5. Tras confirmar, se muestra `/auth/confirmed` con enlace para descargar la app móvil.
-
-Los jugadores **no tienen panel web**; usan la app móvil con las mismas credenciales.
+1. El usuario se registra en `/auth/sign-up`.
+2. Tras registrarse, se muestra `/auth/confirmed` con enlace para descargar la app móvil.
+3. Los jugadores **no inician sesión en la web**; usan la app móvil con las mismas credenciales.
+4. Desde el registro se puede ir a `/admin/login` (acceso para dueños de cancha).
 
 ### Administradores de canchas y empresarios
 
-1. Acceden a `/admin/login` (no aparece en la navegación pública).
+1. Acceden a `/admin/login` (enlace desde el registro o URL directa).
 2. Tras iniciar sesión, la web guarda un `accessToken` en la cookie `ef_token`.
 3. El middleware exige esa cookie para cualquier ruta `/admin/*`.
+4. En desarrollo, el botón «Saltar acceso» permite revisar el dashboard sin backend (`POST /api/session/dev-bypass`).
 
 ---
 

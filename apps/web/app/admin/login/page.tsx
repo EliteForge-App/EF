@@ -15,10 +15,12 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isBypassing, setIsBypassing] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const accessDenied = searchParams.get('error') === 'access_denied'
+  const busy = isLoading || isBypassing
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,6 +61,26 @@ export default function AdminLoginPage() {
       }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleDevBypass = async () => {
+    setIsBypassing(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/session/dev-bypass', { method: 'POST' })
+      if (!response.ok) {
+        setError('El bypass solo está disponible en desarrollo.')
+        return
+      }
+
+      router.push('/admin')
+      router.refresh()
+    } catch {
+      setError('No se pudo activar el acceso de desarrollo.')
+    } finally {
+      setIsBypassing(false)
     }
   }
 
@@ -110,11 +132,28 @@ export default function AdminLoginPage() {
           <Button
             type="submit"
             className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
-            disabled={isLoading}
+            disabled={busy}
           >
             {isLoading ? 'Entrando...' : 'Entrar al portal'}
           </Button>
         </form>
+
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 rounded-lg border border-dashed border-border p-3">
+            <p className="mb-2 text-center text-xs text-muted-foreground">
+              Solo visible en desarrollo
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
+              disabled={busy}
+              onClick={handleDevBypass}
+            >
+              {isBypassing ? 'Entrando...' : 'Saltar acceso (ver dashboard)'}
+            </Button>
+          </div>
+        )}
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           <Link href="/" className="font-medium text-primary hover:underline">

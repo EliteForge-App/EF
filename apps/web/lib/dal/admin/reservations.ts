@@ -1,4 +1,8 @@
 import { apiFetchAuth } from '@/lib/api/server-client'
+import {
+  getDevDemoReservations,
+  isDevAdminBypassActive,
+} from '@/lib/admin/dev-bypass'
 import type { ReservationRow, ReservationStatus } from '@/lib/dal/admin/types'
 
 interface ReservationApiDto {
@@ -30,6 +34,10 @@ function toReservationRow(dto: ReservationApiDto): ReservationRow {
 export async function listReservationsForVenueOwner(
   _ownerId: string,
 ): Promise<ReservationRow[]> {
+  if (await isDevAdminBypassActive()) {
+    return getDevDemoReservations()
+  }
+
   const rows = await apiFetchAuth<ReservationApiDto[]>('reservations/mine')
   return rows.map(toReservationRow)
 }
@@ -39,6 +47,10 @@ export async function updateReservationStatusAsOwner(
   reservationId: string,
   status: ReservationStatus,
 ): Promise<void> {
+  if (await isDevAdminBypassActive()) {
+    return
+  }
+
   await apiFetchAuth(`reservations/${reservationId}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),

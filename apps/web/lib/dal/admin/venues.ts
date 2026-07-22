@@ -1,4 +1,8 @@
 import { apiFetchAuth } from '@/lib/api/server-client'
+import {
+  getDevDemoVenues,
+  isDevAdminBypassActive,
+} from '@/lib/admin/dev-bypass'
 import type { VenueRow } from '@/lib/dal/admin/types'
 
 interface VenueApiDto {
@@ -26,6 +30,10 @@ function toVenueRow(dto: VenueApiDto): VenueRow {
 }
 
 export async function listMyVenues(_ownerId: string): Promise<VenueRow[]> {
+  if (await isDevAdminBypassActive()) {
+    return getDevDemoVenues()
+  }
+
   const rows = await apiFetchAuth<VenueApiDto[]>('venues/mine')
   return rows.map(toVenueRow)
 }
@@ -46,6 +54,19 @@ export async function upsertMyVenue(
     price_per_hour_cents?: number
   },
 ): Promise<VenueRow> {
+  if (await isDevAdminBypassActive()) {
+    const [demo] = getDevDemoVenues()
+    return {
+      ...demo,
+      id: payload.id || demo.id,
+      name: payload.name,
+      address: payload.address ?? null,
+      price_per_hour_cents:
+        payload.price_per_hour_cents ?? demo.price_per_hour_cents,
+      updated_at: new Date().toISOString(),
+    }
+  }
+
   const row = await apiFetchAuth<VenueApiDto>('venues/mine', {
     method: 'PUT',
     body: JSON.stringify({
