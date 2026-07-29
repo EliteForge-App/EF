@@ -9,7 +9,7 @@ import Constants from "expo-constants"
 import { Platform } from "react-native"
 
 /** LAN IP de tu PC en WiFi — actualízala si cambias de red */
-const DEV_LAN_HOST = "192.168.1.148"
+const DEV_LAN_HOST = "192.168.1.132"
 
 function getDevApiHost(): string {
   if (Platform.OS === "web") return "localhost"
@@ -21,6 +21,6 @@ function getDevApiHost(): string {
 
 export default {
   API_URL: `http://${getDevApiHost()}:3000/api/`,
-  /** Portal web de registro (apps/web en dev) */
-  SIGN_UP_URL: "http://localhost:5173/auth/sign-up",
+  /** Portal web de registro (apps/web) — mismo host que la API para emulador/dispositivo */
+  SIGN_UP_URL: `http://${getDevApiHost()}:5173/auth/sign-up`,
 }

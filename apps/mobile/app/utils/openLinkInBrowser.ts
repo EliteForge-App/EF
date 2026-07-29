@@ -1,8 +1,11 @@
 import { Linking } from "react-native"
 
 /**
- * Helper for opening a give URL in an external browser.
+ * Opens a URL in an external browser.
+ * On some Android builds `canOpenURL` is unreliable for http(s); always attempt openURL.
  */
 export function openLinkInBrowser(url: string) {
-  Linking.canOpenURL(url).then((canOpen) => canOpen && Linking.openURL(url))
+  Linking.openURL(url).catch((error) => {
+    console.warn("[openLinkInBrowser] No se pudo abrir:", url, error)
+  })
 }
