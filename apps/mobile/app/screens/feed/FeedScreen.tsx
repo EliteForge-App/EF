@@ -3,8 +3,8 @@ import { Alert, FlatList, StatusBar } from "react-native"
 import { Drawer } from "react-native-drawer-layout"
 import { YStack } from "tamagui"
 
-import { MOCK_FEED_POSTS, type FeedPost } from "@/data/mockFeedPosts"
 import { useAuth } from "@/context/AuthContext"
+import { MOCK_FEED_POSTS, type FeedPost } from "@/data/mockFeedPosts"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { isRTL } from "@/i18n"
 import { translate } from "@/i18n/translate"
@@ -42,10 +42,7 @@ export function FeedScreen() {
   }, [closeDrawer, logout])
 
   const handleComposerPress = useCallback(() => {
-    Alert.alert(
-      translate("feedDrawer:comingSoonTitle"),
-      translate("feedScreen:composerSoon"),
-    )
+    Alert.alert(translate("feedDrawer:comingSoonTitle"), translate("feedScreen:composerSoon"))
   }, [])
 
   const renderPost = useCallback(({ item }: { item: FeedPost }) => {

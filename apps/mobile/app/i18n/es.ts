@@ -85,7 +85,8 @@ const es: Translations = {
     adCtaLearn: "Únete a Elite Forge",
     adPost1: "Forja tu leyenda. Entrena, juega y conéctate con jugadores cerca de ti.",
     adPost2: "Nueva temporada, nuevas metas. Descubre torneos y eventos Elite Forge en tu ciudad.",
-    post1: "¡Gran partido hoy! Nada como una cancha llena con el equipo después de una semana intensa.",
+    post1:
+      "¡Gran partido hoy! Nada como una cancha llena con el equipo después de una semana intensa.",
     post2: "Buscando mediocampistas para el 8v8 del domingo. ¿Quién se apunta?",
     post3: "Primer gol de la temporada. ¡El esfuerzo está dando frutos!",
     post4: "Entrenamiento de ayer. Cada toque cuenta.",

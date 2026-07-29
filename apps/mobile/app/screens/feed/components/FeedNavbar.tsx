@@ -1,8 +1,8 @@
 import { XStack, YStack } from "tamagui"
 
+import { EliteForgeLogo } from "@/components/ui"
 import { useAuth } from "@/context/AuthContext"
 import { translate } from "@/i18n/translate"
-import { EliteForgeLogo } from "@/components/ui"
 
 import { FeedAvatar } from "./FeedAvatar"
 import { FeedMenuButton } from "./FeedMenuButton"

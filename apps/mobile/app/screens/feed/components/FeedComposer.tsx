@@ -46,11 +46,7 @@ export function FeedComposer({ onPress }: FeedComposerProps) {
         marginBottom={4}
       >
         <XStack alignItems="center" gap={12}>
-          <FeedAvatar
-            label={getUserInitial(authEmail)}
-            color={getUserColor(authEmail)}
-            size={44}
-          />
+          <FeedAvatar label={getUserInitial(authEmail)} color={getUserColor(authEmail)} size={44} />
           <YStack
             flex={1}
             backgroundColor="#2e2e2e"

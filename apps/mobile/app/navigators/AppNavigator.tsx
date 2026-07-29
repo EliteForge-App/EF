@@ -9,12 +9,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
-import { eliteForgeColors } from "@/theme/eliteForgeColors"
-import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
-import { FeedScreen } from "@/screens/feed/FeedScreen"
 import { LoginScreen } from "@/screens/auth/LoginScreen"
 import { RegisterScreen } from "@/screens/auth/RegisterScreen"
+import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
+import { FeedScreen } from "@/screens/feed/FeedScreen"
 import { useAppTheme } from "@/theme/context"
+import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
 import { DemoNavigator } from "./DemoNavigator"
 import type { AppStackParamList, NavigationProps } from "./navigationTypes"
@@ -31,10 +31,6 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = () => {
   const { isAuthenticated } = useAuth()
-
-  const {
-    theme: { colors },
-  } = useAppTheme()
 
   return (
     <Stack.Navigator

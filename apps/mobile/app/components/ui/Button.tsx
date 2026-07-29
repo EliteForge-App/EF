@@ -55,7 +55,10 @@ export function Button({
       onPressOut={motion.onPressOut}
       onHoverIn={motion.onHoverIn}
       onHoverOut={motion.onHoverOut}
-      style={{ width: width === "100%" ? "100%" : undefined, alignSelf: width === "100%" ? "stretch" : undefined }}
+      style={{
+        width: width === "100%" ? "100%" : undefined,
+        alignSelf: width === "100%" ? "stretch" : undefined,
+      }}
     >
       <Animated.View style={motion.animatedStyle}>
         <TamaguiButton

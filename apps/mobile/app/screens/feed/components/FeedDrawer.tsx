@@ -2,10 +2,10 @@ import { Pressable } from "react-native"
 import Animated from "react-native-reanimated"
 import { Text, XStack, YStack } from "tamagui"
 
+import { EliteForgeLogo } from "@/components/ui"
 import { useAuth } from "@/context/AuthContext"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
 import { translate } from "@/i18n/translate"
-import { EliteForgeLogo } from "@/components/ui"
 
 import { FeedAvatar } from "./FeedAvatar"
 

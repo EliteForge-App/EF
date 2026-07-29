@@ -59,9 +59,7 @@ export function Input({
             rounded="$3"
             alignItems="center"
             hoverStyle={
-              Platform.OS === "web"
-                ? { borderColor: "$efEmerald", bg: "#3f3f3f" }
-                : undefined
+              Platform.OS === "web" ? { borderColor: "$efEmerald", bg: "#3f3f3f" } : undefined
             }
           >
             <TamaguiInput

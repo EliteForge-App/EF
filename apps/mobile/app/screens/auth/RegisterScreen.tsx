@@ -17,8 +17,7 @@ type RegisterScreenProps = AppStackScreenProps<"Register">
  * Si se navega aquí, abre el formulario web y vuelve al login.
  */
 export function RegisterScreen({ navigation }: RegisterScreenProps) {
-  const { insets, horizontalPadding, contentMaxWidth, isSmallScreen } =
-    useResponsiveLayout()
+  const { insets, horizontalPadding, contentMaxWidth, isSmallScreen } = useResponsiveLayout()
 
   useEffect(() => {
     openLinkInBrowser(Config.SIGN_UP_URL)
@@ -50,12 +49,7 @@ export function RegisterScreen({ navigation }: RegisterScreenProps) {
       >
         <EliteForgeLogo />
         <ActivityIndicator color="#00CEC8" />
-        <Text
-          color="#FFFFFF"
-          opacity={0.65}
-          fontSize={isSmallScreen ? 14 : 16}
-          textAlign="center"
-        >
+        <Text color="#FFFFFF" opacity={0.65} fontSize={isSmallScreen ? 14 : 16} textAlign="center">
           {translate("registerScreen:subtitle")}
         </Text>
       </YStack>
