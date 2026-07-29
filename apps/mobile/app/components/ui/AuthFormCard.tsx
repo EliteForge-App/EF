@@ -22,12 +22,7 @@ export function AuthFormCard({ children, ...props }: AuthFormCardProps) {
           overflow="hidden"
           borderWidth={1}
           borderColor="#555555"
-          animation="quick"
-          hoverStyle={
-            Platform.OS === "web"
-              ? { borderColor: "#00CEC8", bg: "#3a3a3a" }
-              : undefined
-          }
+          hoverStyle={Platform.OS === "web" ? { borderColor: "#00CEC8", bg: "#3a3a3a" } : undefined}
         >
           <XStack height={3} width="100%">
             <YStack flex={1} bg="#00CEC8" />

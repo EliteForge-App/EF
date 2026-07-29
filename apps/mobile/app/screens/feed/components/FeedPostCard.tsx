@@ -3,18 +3,13 @@ import { Text, XStack, YStack } from "tamagui"
 
 import type { FeedPost } from "@/data/mockFeedPosts"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
-import { translate } from "@/i18n/translate"
 import type { TxKeyPath } from "@/i18n"
+import { translate } from "@/i18n/translate"
 
 import { FeedAvatar } from "./FeedAvatar"
 
 export interface FeedPostCardProps {
   post: FeedPost
-}
-
-function formatCount(value: number) {
-  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`
-  return String(value)
 }
 
 function ActionButton({ label, onPress }: { label: string; onPress?: () => void }) {
@@ -158,11 +153,11 @@ export function FeedPostCard({ post }: FeedPostCardProps) {
                 justifyContent="space-between"
               >
                 <Text color="rgba(255,255,255,0.55)" fontSize={13}>
-                  {translate("feedScreen:likesCount", { count: formatCount(post.likes) })}
+                  {translate("feedScreen:likesCount", { count: post.likes })}
                 </Text>
                 <Text color="rgba(255,255,255,0.55)" fontSize={13}>
                   {translate("feedScreen:commentsCount", {
-                    count: formatCount(post.comments),
+                    count: post.comments,
                   })}
                 </Text>
               </XStack>

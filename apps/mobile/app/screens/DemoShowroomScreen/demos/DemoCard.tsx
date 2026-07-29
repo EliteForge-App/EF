@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-key, react-native/no-inline-styles */
+/* eslint-disable react/jsx-key */
 import { AutoImage } from "@/components/AutoImage"
 import { Button } from "@/components/Button"
 import { Card } from "@/components/Card"

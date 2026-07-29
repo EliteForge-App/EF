@@ -19,9 +19,12 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
-      - run: npm run compile
+          cache-dependency-path: package-lock.json
+      - name: Instalar dependencias (monorepo)
+        working-directory: .
+        run: npm ci
+      - name: Comprobar TypeScript
+        run: npx tsc --noEmit -p . --pretty
       - run: npm run lint:check
       - run: npm test -- --passWithNoTests
 
@@ -37,9 +40,33 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-      - run: npm ci
+          cache-dependency-path: package-lock.json
+      - name: Instalar dependencias (monorepo)
+        working-directory: .
+        run: npm ci
+      - name: Comprobar TypeScript
+        run: npx tsc --noEmit -p tsconfig.build.json
       - run: npm run build
       - run: npm test -- --passWithNoTests
+
+  web:
+    name: Web (Next.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Instalar dependencias (monorepo)
+        working-directory: .
+        run: npm ci
+      - name: Comprobar TypeScript
+        run: npx tsc --noEmit
 
   docker:
     name: Docker Build

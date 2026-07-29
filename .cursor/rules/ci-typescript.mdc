@@ -1,0 +1,31 @@
+---
+description: CI/CD y TypeScript obligatorio en el monorepo EF (mobile, backend, web)
+alwaysApply: true
+---
+
+# Elite Forge — CI / TypeScript
+
+`main` está protegida: ningún PR hace merge si fallan TypeScript o compilación en GitHub Actions (`.github/workflows/ci.yml`).
+
+## TypeScript
+
+- No uses `any` salvo justificación estricta.
+- Respeta el `tsconfig.json` del área que editas (`apps/mobile`, `apps/backend`, `apps/web`).
+- Anticipa fallos de CI al generar o refactorizar código.
+- No rompas imports compartidos ni contratos API entre NestJS y los frontends.
+
+## Antes de commit / PR
+
+Ejecuta (o pide ejecutar) la verificación del módulo tocado:
+
+| Área | Comando |
+|------|---------|
+| Mobile | `cd apps/mobile && npx tsc --noEmit -p .` |
+| Backend | `cd apps/backend && npx tsc --noEmit -p tsconfig.build.json` |
+| Web | `cd apps/web && npx tsc --noEmit` |
+
+Si el cambio cruza varias áreas, valida cada una afectada.
+
+## Commits
+
+Mensajes claros con scope: `feat(mobile): …`, `fix(backend): …`, `feat(web): …`, `chore(ci): …`.

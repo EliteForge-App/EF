@@ -7,14 +7,7 @@ export interface AppCardProps extends CardProps {
 
 export function Card({ title, subtitle, children, ...props }: AppCardProps) {
   return (
-    <TamaguiCard
-      bordered
-      rounded="$4"
-      p="$4"
-      bg="$background"
-      elevation="$2"
-      {...props}
-    >
+    <TamaguiCard borderWidth={1} rounded="$4" p="$4" bg="$background" elevation="$2" {...props}>
       <YStack gap="$2">
         {title ? (
           <Text fontSize="$6" fontWeight="700" color="$color">

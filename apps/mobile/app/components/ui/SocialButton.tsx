@@ -19,10 +19,7 @@ const ICON_SIZE_COMPACT = 26
 const BUTTON_HEIGHT = 52
 const BUTTON_HEIGHT_COMPACT = 44
 
-const providerStyles: Record<
-  SocialProvider,
-  { bg: string; hoverBg: string; badge: string; badgeColor: string; badgeBg: string; borderWidth: number }
-> = {
+const providerStyles = {
   google: {
     bg: "#FFFFFF",
     hoverBg: "#F5F5F5",
@@ -39,7 +36,17 @@ const providerStyles: Record<
     badgeBg: "rgba(255,255,255,0.2)",
     borderWidth: 0,
   },
-}
+} as const satisfies Record<
+  SocialProvider,
+  {
+    bg: `#${string}`
+    hoverBg: `#${string}`
+    badge: string
+    badgeColor: `#${string}`
+    badgeBg: `#${string}` | `rgba(${string})`
+    borderWidth: number
+  }
+>
 
 export function SocialButton({
   provider,
@@ -81,7 +88,6 @@ export function SocialButton({
           paddingHorizontal={compact ? 8 : 16}
           position="relative"
           gap={compact ? 6 : 0}
-          animation="quick"
           hoverStyle={{ bg: style.hoverBg }}
           {...props}
         >

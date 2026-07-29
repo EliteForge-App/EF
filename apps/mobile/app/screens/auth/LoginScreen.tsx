@@ -11,11 +11,11 @@ import {
   LinkText,
   SocialButton,
 } from "@/components/ui"
+import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
-import Config from "@/config"
 import { api } from "@/services/api"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 import { openLinkInBrowser } from "@/utils/openLinkInBrowser"
@@ -175,7 +175,12 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
                   </Text>
                 ) : null}
 
-                <Button width="100%" onPress={handleLogin} disabled={isLoading} opacity={isLoading ? 0.7 : 1}>
+                <Button
+                  width="100%"
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                  opacity={isLoading ? 0.7 : 1}
+                >
                   {isLoading
                     ? translate("loginScreen:signingIn")
                     : translate("loginScreen:signInButton")}

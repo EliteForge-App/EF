@@ -16,7 +16,8 @@ import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
 const welcomeLogo = require("@assets/images/logo.png")
 const welcomeFace = require("@assets/images/welcome-face.png")
 
-interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
+/** Pantalla plantilla Ignite; no está registrada en AppNavigator. */
+interface WelcomeScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_props) {
   const { themed, theme } = useAppTheme()
