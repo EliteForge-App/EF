@@ -19,8 +19,10 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
+          cache-dependency-path: package-lock.json
+      - name: Instalar dependencias (monorepo)
+        working-directory: .
+        run: npm ci
       - name: Comprobar TypeScript
         run: npx tsc --noEmit -p . --pretty
       - run: npm run lint:check
@@ -38,7 +40,10 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-      - run: npm ci
+          cache-dependency-path: package-lock.json
+      - name: Instalar dependencias (monorepo)
+        working-directory: .
+        run: npm ci
       - name: Comprobar TypeScript
         run: npx tsc --noEmit -p tsconfig.build.json
       - run: npm run build
