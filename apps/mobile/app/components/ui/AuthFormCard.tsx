@@ -22,7 +22,6 @@ export function AuthFormCard({ children, ...props }: AuthFormCardProps) {
           overflow="hidden"
           borderWidth={1}
           borderColor="#555555"
-          animation="quick"
           hoverStyle={
             Platform.OS === "web"
               ? { borderColor: "#00CEC8", bg: "#3a3a3a" }

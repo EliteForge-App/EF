@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Platform, Pressable, View, type NativeSyntheticEvent, type TextInputFocusEventData } from "react-native"
+import { Platform, Pressable, View } from "react-native"
 import Animated from "react-native-reanimated"
 import {
   Input as TamaguiInput,
@@ -33,13 +33,13 @@ export function Input({
   const [focused, setFocused] = useState(false)
   const motion = useInteractiveMotion("input")
 
-  const handleFocus = (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleFocus: NonNullable<TamaguiInputProps["onFocus"]> = (event) => {
     setFocused(true)
     motion.onFocus()
     onFocus?.(event)
   }
 
-  const handleBlur = (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleBlur: NonNullable<TamaguiInputProps["onBlur"]> = (event) => {
     setFocused(false)
     motion.onBlur()
     onBlur?.(event)
@@ -57,8 +57,7 @@ export function Input({
             borderWidth={1}
             borderColor={focused ? "$efEmerald" : "$efCarbonBorder"}
             rounded="$3"
-            ai="center"
-            animation="quick"
+            alignItems="center"
             hoverStyle={
               Platform.OS === "web"
                 ? { borderColor: "$efEmerald", bg: "#3f3f3f" }
@@ -74,7 +73,7 @@ export function Input({
               autoCapitalize="none"
               autoCorrect={false}
               color="$efWhite"
-              placeholderTextColor="rgba(255,255,255,0.35)"
+              placeholderTextColor="$efMutedSurface"
               borderWidth={0}
               bg="transparent"
               fontSize="$4"

@@ -60,7 +60,6 @@ export function Button({
       <Animated.View style={motion.animatedStyle}>
         <TamaguiButton
           pointerEvents="none"
-          animation="quick"
           rounded="$3"
           fontWeight="700"
           fontSize="$4"

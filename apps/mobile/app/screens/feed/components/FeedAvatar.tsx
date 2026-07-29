@@ -29,7 +29,7 @@ export function FeedAvatar({
       width={size}
       height={size}
       borderRadius={size / 2}
-      backgroundColor={color}
+      backgroundColor={color as `#${string}`}
       alignItems="center"
       justifyContent="center"
       borderWidth={showRing ? 2 : 0}

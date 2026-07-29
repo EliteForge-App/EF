@@ -9,7 +9,7 @@ export interface LinkTextProps {
 
 export function LinkText({ prompt, linkLabel, onPress }: LinkTextProps) {
   return (
-    <XStack jc="center" ai="center" gap="$1" flexWrap="wrap">
+    <XStack justifyContent="center" alignItems="center" gap="$1" flexWrap="wrap">
       <Text color="$efWhite" opacity={0.7} fontSize="$3">
         {prompt}
       </Text>

@@ -10,8 +10,8 @@ export interface NavbarProps extends XStackProps {
 export function Navbar({ rightContent, showLogo = true, children, ...props }: NavbarProps) {
   return (
     <XStack
-      ai="center"
-      jc="space-between"
+      alignItems="center"
+      justifyContent="space-between"
       px="$4"
       py="$3"
       bg="$background"
@@ -19,7 +19,7 @@ export function Navbar({ rightContent, showLogo = true, children, ...props }: Na
       borderBottomColor="$borderColor"
       {...props}
     >
-      <XStack ai="center" gap="$3" flex={1}>
+      <XStack alignItems="center" gap="$3" flex={1}>
         {showLogo ? <EliteForgeLogo width={36} /> : null}
         {children}
       </XStack>

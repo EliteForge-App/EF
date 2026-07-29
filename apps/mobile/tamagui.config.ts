@@ -1,14 +1,16 @@
 import { defaultConfig } from "@tamagui/config/v5"
+import { animationsReanimated } from "@tamagui/config/v5-reanimated"
 import { createTamagui } from "tamagui"
 
 import { eliteForgeColors } from "./app/theme/eliteForgeColors"
 
 const tamaguiConfig = createTamagui({
   ...defaultConfig,
+  animations: animationsReanimated,
   tokens: {
     ...defaultConfig.tokens,
+    // v5 defaultConfig no incluye tokens.color; se definen aquí como fallback de temas.
     color: {
-      ...defaultConfig.tokens.color,
       efEmerald: eliteForgeColors.emerald,
       efOrange: eliteForgeColors.orange,
       efCarbon: eliteForgeColors.carbon,
@@ -18,6 +20,12 @@ const tamaguiConfig = createTamagui({
       efCarbonInput: eliteForgeColors.carbonInput,
       efMutedSurface: eliteForgeColors.mutedSurface,
     },
+  },
+  settings: {
+    ...defaultConfig.settings,
+    // Restaura longhands (backgroundColor, borderRadius, etc.) usados en la app.
+    onlyAllowShorthands: false,
+    styleCompat: "legacy",
   },
   themes: {
     ...defaultConfig.themes,
