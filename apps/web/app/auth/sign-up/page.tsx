@@ -2,6 +2,7 @@
 
 import { register } from '@/lib/api/auth'
 import { ApiError } from '@/lib/api/client'
+import { SocialAuthButtons } from '@/components/auth/social-auth-buttons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,6 +20,13 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  const handleSocial = (provider: 'google' | 'facebook') => {
+    const label = provider === 'google' ? 'Gmail' : 'Facebook'
+    setError(
+      `El registro con ${label} estará disponible pronto. Mientras tanto, crea tu cuenta con correo.`,
+    )
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,7 +70,7 @@ export default function SignUpPage() {
       if (err instanceof ApiError) {
         setError(
           err.status === 401
-            ? 'Este correo ya está registrado. Prueba a iniciar sesión.'
+            ? 'Este correo ya está registrado. Accede al portal de gestión de canchas.'
             : err.message,
         )
       } else {
@@ -138,22 +146,29 @@ export default function SignUpPage() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button
-          type="submit"
-          className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
-        </Button>
+        <div className="flex items-center gap-3">
+          <SocialAuthButtons
+            onProviderClick={handleSocial}
+            disabled={isLoading}
+            layout="row"
+          />
+          <Button
+            type="submit"
+            className="h-11 min-w-0 flex-1 font-heading font-semibold uppercase tracking-wide"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
+          </Button>
+        </div>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        ¿Ya tienes cuenta?{' '}
+        ¿Gestionas una cancha?{' '}
         <Link
-          href="/auth/login"
+          href="/admin/login"
           className="font-medium text-primary hover:underline"
         >
-          Inicia sesión
+          Accede al portal de administración
         </Link>
       </p>
     </div>

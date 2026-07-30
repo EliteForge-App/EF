@@ -1,18 +1,28 @@
 import { Image, Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import { Text, XStack, YStack } from "tamagui"
 
 import type { FeedPost } from "@/data/mockFeedPosts"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
-import type { TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
+import type { TxKeyPath } from "@/i18n"
 
 import { FeedAvatar } from "./FeedAvatar"
 
 export interface FeedPostCardProps {
   post: FeedPost
+  onShare?: (post: FeedPost) => void
 }
 
-function ActionButton({ label, onPress }: { label: string; onPress?: () => void }) {
+function ActionButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap
+  label: string
+  onPress?: () => void
+}) {
   const motion = useInteractiveMotion("button")
 
   return (
@@ -21,9 +31,12 @@ function ActionButton({ label, onPress }: { label: string; onPress?: () => void 
       onPressIn={motion.onPressIn}
       onPressOut={motion.onPressOut}
       style={{ flex: 1 }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
     >
       <XStack flex={1} alignItems="center" justifyContent="center" paddingVertical={10} gap={6}>
-        <Text color="rgba(255,255,255,0.75)" fontSize={14} fontWeight="600">
+        <Ionicons name={icon} size={18} color="rgba(255,255,255,0.75)" />
+        <Text color="rgba(255,255,255,0.75)" fontSize={13} fontWeight="600" numberOfLines={1}>
           {label}
         </Text>
       </XStack>
@@ -31,7 +44,7 @@ function ActionButton({ label, onPress }: { label: string; onPress?: () => void 
   )
 }
 
-export function FeedPostCard({ post }: FeedPostCardProps) {
+export function FeedPostCard({ post, onShare }: FeedPostCardProps) {
   const isAd = post.kind === "eliteAd"
   const content = translate(post.content as TxKeyPath)
   const timeLabel = translate(post.timeAgoKey as TxKeyPath)
@@ -119,9 +132,7 @@ export function FeedPostCard({ post }: FeedPostCardProps) {
                     borderWidth={2}
                     borderColor="#FFFFFF"
                   >
-                    <Text color="#FFFFFF" fontSize={22}>
-                      ▶
-                    </Text>
+                    <Ionicons name="play" size={26} color="#FFFFFF" style={{ marginLeft: 3 }} />
                   </XStack>
                 </XStack>
               ) : null}
@@ -163,9 +174,13 @@ export function FeedPostCard({ post }: FeedPostCardProps) {
               </XStack>
 
               <XStack borderTopWidth={1} borderTopColor="#555555">
-                <ActionButton label={translate("feedScreen:like")} />
-                <ActionButton label={translate("feedScreen:comment")} />
-                <ActionButton label={translate("feedScreen:share")} />
+                <ActionButton icon="heart-outline" label={translate("feedScreen:like")} />
+                <ActionButton icon="chatbubble-outline" label={translate("feedScreen:comment")} />
+                <ActionButton
+                  icon="share-outline"
+                  label={translate("feedScreen:share")}
+                  onPress={() => onShare?.(post)}
+                />
               </XStack>
             </>
           ) : null}
