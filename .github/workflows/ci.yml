@@ -84,4 +84,4 @@ jobs:
           docker build \
             -f infrastructure/docker/Dockerfile.${{ matrix.service }} \
             -t ef-${{ matrix.service }}:latest \
-            apps/backend
+            .

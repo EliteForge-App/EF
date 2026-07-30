@@ -15,6 +15,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
+COPY apps/web/package.json apps/web/package.json
 
 RUN npm ci --workspace=@ef/backend --include-workspace-root
 
@@ -38,6 +39,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
+COPY apps/web/package.json apps/web/package.json
 
 ENV NODE_ENV=production
 
