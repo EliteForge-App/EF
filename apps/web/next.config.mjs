@@ -22,6 +22,16 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID || new Date().toISOString(),
   },
+  async redirects() {
+    return [
+      {
+        // La web no autentica perfiles de jugador: solo portal de managers
+        source: '/auth/login',
+        destination: '/admin/login',
+        permanent: false,
+      },
+    ]
+  },
   async rewrites() {
     return [
       {

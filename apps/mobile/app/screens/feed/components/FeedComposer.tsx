@@ -1,9 +1,11 @@
 import { Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import { Text, XStack, YStack } from "tamagui"
 
 import { useAuth } from "@/context/AuthContext"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
 import { translate } from "@/i18n/translate"
+import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
 import { FeedAvatar } from "./FeedAvatar"
 
@@ -21,6 +23,27 @@ function getUserColor(email?: string) {
   const hash = email.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
   const palette = ["#00CEC8", "#FF8C00", "#7B68EE", "#2ECC71", "#E74C3C"]
   return palette[hash % palette.length]
+}
+
+function ComposerAction({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap
+  label: string
+  onPress?: () => void
+}) {
+  return (
+    <Pressable onPress={onPress} style={{ flex: 1 }} accessibilityRole="button">
+      <XStack flex={1} alignItems="center" justifyContent="center" gap={6} paddingVertical={4}>
+        <Ionicons name={icon} size={18} color={eliteForgeColors.emerald} />
+        <Text color="#00CEC8" fontSize={13} fontWeight="600">
+          {label}
+        </Text>
+      </XStack>
+    </Pressable>
+  )
 }
 
 export function FeedComposer({ onPress }: FeedComposerProps) {
@@ -43,7 +66,7 @@ export function FeedComposer({ onPress }: FeedComposerProps) {
         borderColor="#555555"
         padding={14}
         gap={12}
-        marginBottom={4}
+        marginBottom={18}
       >
         <XStack alignItems="center" gap={12}>
           <FeedAvatar label={getUserInitial(authEmail)} color={getUserColor(authEmail)} size={44} />
@@ -62,25 +85,22 @@ export function FeedComposer({ onPress }: FeedComposerProps) {
           </YStack>
         </XStack>
 
-        <XStack gap={8} justifyContent="space-around">
-          <XStack flex={1} alignItems="center" justifyContent="center" gap={6}>
-            <Text fontSize={16}>📷</Text>
-            <Text color="#00CEC8" fontSize={13} fontWeight="600">
-              {translate("feedScreen:composerPhoto")}
-            </Text>
-          </XStack>
-          <XStack flex={1} alignItems="center" justifyContent="center" gap={6}>
-            <Text fontSize={16}>🎬</Text>
-            <Text color="#00CEC8" fontSize={13} fontWeight="600">
-              {translate("feedScreen:composerVideo")}
-            </Text>
-          </XStack>
-          <XStack flex={1} alignItems="center" justifyContent="center" gap={6}>
-            <Text fontSize={16}>⚽</Text>
-            <Text color="#00CEC8" fontSize={13} fontWeight="600">
-              {translate("feedScreen:composerMatch")}
-            </Text>
-          </XStack>
+        <XStack gap={4} justifyContent="space-around">
+          <ComposerAction
+            icon="image-outline"
+            label={translate("feedScreen:composerPhoto")}
+            onPress={onPress}
+          />
+          <ComposerAction
+            icon="videocam-outline"
+            label={translate("feedScreen:composerVideo")}
+            onPress={onPress}
+          />
+          <ComposerAction
+            icon="football-outline"
+            label={translate("feedScreen:composerMatch")}
+            onPress={onPress}
+          />
         </XStack>
       </YStack>
     </Pressable>

@@ -1,4 +1,5 @@
 import { Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import Animated from "react-native-reanimated"
 import { Text, XStack, YStack } from "tamagui"
 
@@ -6,6 +7,7 @@ import { EliteForgeLogo } from "@/components/ui"
 import { useAuth } from "@/context/AuthContext"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
 import { translate } from "@/i18n/translate"
+import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
 import { FeedAvatar } from "./FeedAvatar"
 
@@ -17,11 +19,15 @@ export interface FeedDrawerProps {
   onLogout: () => void
 }
 
-const MENU_ITEMS: { id: FeedDrawerItemId; icon: string; labelKey: string }[] = [
-  { id: "profile", icon: "👤", labelKey: "feedDrawer:profile" },
-  { id: "groups", icon: "👥", labelKey: "feedDrawer:groups" },
-  { id: "matches", icon: "⚽", labelKey: "feedDrawer:matches" },
-  { id: "reservations", icon: "🏟️", labelKey: "feedDrawer:reservations" },
+const MENU_ITEMS: {
+  id: FeedDrawerItemId
+  icon: keyof typeof Ionicons.glyphMap
+  labelKey: string
+}[] = [
+  { id: "profile", icon: "person-outline", labelKey: "feedDrawer:profile" },
+  { id: "groups", icon: "people-outline", labelKey: "feedDrawer:groups" },
+  { id: "matches", icon: "football-outline", labelKey: "feedDrawer:matches" },
+  { id: "reservations", icon: "calendar-outline", labelKey: "feedDrawer:reservations" },
 ]
 
 function getUserDisplayName(email?: string) {
@@ -42,7 +48,7 @@ function DrawerMenuItem({
   label,
   onPress,
 }: {
-  icon: string
+  icon: keyof typeof Ionicons.glyphMap
   label: string
   onPress: () => void
 }) {
@@ -69,7 +75,16 @@ function DrawerMenuItem({
           borderColor="#555555"
           marginBottom={10}
         >
-          <Text fontSize={20}>{icon}</Text>
+          <XStack
+            width={36}
+            height={36}
+            borderRadius={10}
+            backgroundColor="rgba(0,206,200,0.12)"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Ionicons name={icon} size={20} color={eliteForgeColors.emerald} />
+          </XStack>
           <YStack flex={1} gap={2}>
             <Text color="#FFFFFF" fontWeight="700" fontSize={15}>
               {label}
@@ -78,9 +93,7 @@ function DrawerMenuItem({
               {translate("feedDrawer:comingSoon")}
             </Text>
           </YStack>
-          <Text color="#00CEC8" fontSize={16}>
-            ›
-          </Text>
+          <Ionicons name="chevron-forward" size={18} color={eliteForgeColors.emerald} />
         </XStack>
       </Animated.View>
     </Pressable>
@@ -102,9 +115,7 @@ export function FeedDrawer({ onClose, onItemPress, onLogout }: FeedDrawerProps) 
         <XStack alignItems="center" justifyContent="space-between">
           <EliteForgeLogo width={48} />
           <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button">
-            <Text color="#00CEC8" fontSize={22} fontWeight="700">
-              ✕
-            </Text>
+            <Ionicons name="close" size={26} color={eliteForgeColors.emerald} />
           </Pressable>
         </XStack>
 
@@ -155,7 +166,9 @@ export function FeedDrawer({ onClose, onItemPress, onLogout }: FeedDrawerProps) 
               paddingVertical={14}
               alignItems="center"
               justifyContent="center"
+              gap={8}
             >
+              <Ionicons name="log-out-outline" size={18} color="#FF8C00" />
               <Text color="#FF8C00" fontWeight="800" fontSize={15}>
                 {translate("common:logOut")}
               </Text>

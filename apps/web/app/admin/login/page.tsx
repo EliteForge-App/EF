@@ -117,6 +117,14 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
+          ¿Aún no tienes cuenta?{' '}
+          <Link
+            href="/auth/sign-up"
+            className="font-medium text-primary hover:underline"
+          >
+            Regístrate
+          </Link>
+          {' · '}
           <Link href="/" className="font-medium text-primary hover:underline">
             Volver a la web pública
           </Link>
