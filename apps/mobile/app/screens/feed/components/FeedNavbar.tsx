@@ -67,17 +67,17 @@ export function FeedNavbar({ onMenuPress, onProfilePress, scrollY }: FeedNavbarP
     return {
       width: size,
       height: size * 1.05,
-      opacity: interpolate(scrollY.value, [0, FEED_NAV_SCROLL_DISTANCE], [1, 0.92], Extrapolation.CLAMP),
+      opacity: interpolate(
+        scrollY.value,
+        [0, FEED_NAV_SCROLL_DISTANCE],
+        [1, 0.92],
+        Extrapolation.CLAMP,
+      ),
     }
   })
 
   const accentStyle = useAnimatedStyle(() => ({
-    height: interpolate(
-      scrollY.value,
-      [0, FEED_NAV_SCROLL_DISTANCE],
-      [3, 2],
-      Extrapolation.CLAMP,
-    ),
+    height: interpolate(scrollY.value, [0, FEED_NAV_SCROLL_DISTANCE], [3, 2], Extrapolation.CLAMP),
   }))
 
   const logoImageStyle: StyleProp<ImageStyle> = {

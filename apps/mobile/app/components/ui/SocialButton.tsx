@@ -139,15 +139,10 @@ export function SocialButton({
             borderWidth={provider === "google" ? 1 : 0}
             borderColor="#E0E0E0"
             style={{
-              backgroundColor:
-                provider === "google" ? "#FFFFFF" : "rgba(255,255,255,0.2)",
+              backgroundColor: provider === "google" ? "#FFFFFF" : "rgba(255,255,255,0.2)",
             }}
           >
-            <Ionicons
-              name={style.icon}
-              size={compact ? 16 : 18}
-              color={style.iconColor}
-            />
+            <Ionicons name={style.icon} size={compact ? 16 : 18} color={style.iconColor} />
           </XStack>
 
           {!compact ? (

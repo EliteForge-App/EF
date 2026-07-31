@@ -9,20 +9,9 @@ export interface LinkTextProps {
   align?: "center" | "flex-end" | "flex-start"
 }
 
-export function LinkText({
-  prompt,
-  linkLabel,
-  onPress,
-  align = "center",
-}: LinkTextProps) {
+export function LinkText({ prompt, linkLabel, onPress, align = "center" }: LinkTextProps) {
   return (
-    <XStack
-      justifyContent={align}
-      alignItems="center"
-      gap={4}
-      flexWrap="wrap"
-      maxWidth="100%"
-    >
+    <XStack justifyContent={align} alignItems="center" gap={4} flexWrap="wrap" maxWidth="100%">
       <Text color="$efWhite" opacity={0.7} fontSize={13} numberOfLines={1}>
         {prompt}
       </Text>

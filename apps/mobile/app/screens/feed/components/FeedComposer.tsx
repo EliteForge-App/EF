@@ -1,5 +1,5 @@
-import { Ionicons } from "@expo/vector-icons"
 import { Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import { Text, XStack, YStack } from "tamagui"
 
 import { useAuth } from "@/context/AuthContext"
@@ -69,11 +69,7 @@ export function FeedComposer({ onPress }: FeedComposerProps) {
         marginBottom={18}
       >
         <XStack alignItems="center" gap={12}>
-          <FeedAvatar
-            label={getUserInitial(authEmail)}
-            color={getUserColor(authEmail)}
-            size={44}
-          />
+          <FeedAvatar label={getUserInitial(authEmail)} color={getUserColor(authEmail)} size={44} />
           <YStack
             flex={1}
             backgroundColor="#2e2e2e"

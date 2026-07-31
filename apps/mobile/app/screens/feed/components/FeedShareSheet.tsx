@@ -80,7 +80,14 @@ export function FeedShareSheet({ visible, onClose, authorName }: FeedShareSheetP
           paddingTop={10}
           paddingBottom={insets.bottom + 16}
         >
-          <XStack alignSelf="center" width={40} height={4} borderRadius={2} backgroundColor="#666666" marginBottom={12} />
+          <XStack
+            alignSelf="center"
+            width={40}
+            height={4}
+            borderRadius={2}
+            backgroundColor="#666666"
+            marginBottom={12}
+          />
 
           <Text color="#FFFFFF" fontWeight="800" fontSize={17} marginBottom={4}>
             {translate("feedScreen:shareTitle")}

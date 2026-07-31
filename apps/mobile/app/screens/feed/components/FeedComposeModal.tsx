@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState } from "react"
-import {
-  Dimensions,
-  Keyboard,
-  Modal,
-  Platform,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native"
+import { Dimensions, Keyboard, Modal, Platform, Pressable, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { Text, XStack, YStack } from "tamagui"
 
+import { TextField } from "@/components/TextField"
 import { useAuth } from "@/context/AuthContext"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { translate } from "@/i18n/translate"
@@ -50,13 +43,7 @@ function getUserColor(email?: string) {
   return palette[hash % palette.length]
 }
 
-function AttachChip({
-  icon,
-  label,
-}: {
-  icon: keyof typeof Ionicons.glyphMap
-  label: string
-}) {
+function AttachChip({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
   return (
     <XStack
       alignItems="center"
@@ -238,7 +225,7 @@ export function FeedComposeModal({ visible, onClose }: FeedComposeModalProps) {
               </Text>
             </XStack>
 
-            <TextInput
+            <TextField
               value={draft}
               onChangeText={setDraft}
               placeholder={translate("feedScreen:composePlaceholder")}
@@ -246,10 +233,18 @@ export function FeedComposeModal({ visible, onClose }: FeedComposeModalProps) {
               multiline
               autoFocus
               scrollEnabled
-              style={{
+              containerStyle={{ flex: 1 }}
+              inputWrapperStyle={{
                 flex: 1,
                 minHeight: 56,
                 maxHeight: 88,
+                borderWidth: 0,
+                backgroundColor: "transparent",
+                paddingHorizontal: 0,
+                paddingVertical: 0,
+              }}
+              style={{
+                flex: 1,
                 color: "#FFFFFF",
                 fontSize: 15,
                 lineHeight: 21,

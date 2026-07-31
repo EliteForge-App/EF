@@ -56,7 +56,9 @@ export function Input({
             alignItems="center"
             minHeight={TOGGLE_SIZE}
             hoverStyle={
-              Platform.OS === "web" ? { borderColor: "$efEmerald", backgroundColor: "#3f3f3f" } : undefined
+              Platform.OS === "web"
+                ? { borderColor: "$efEmerald", backgroundColor: "#3f3f3f" }
+                : undefined
             }
           >
             <TamaguiInput

@@ -115,10 +115,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
   }, [setAuthEmail, setAuthToken])
 
   const handleSettings = useCallback(() => {
-    Alert.alert(
-      translate("feedDrawer:comingSoonTitle"),
-      translate("loginScreen:settingsSoon"),
-    )
+    Alert.alert(translate("feedDrawer:comingSoonTitle"), translate("loginScreen:settingsSoon"))
   }, [])
 
   return (

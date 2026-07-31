@@ -4,8 +4,8 @@ import { Text, XStack, YStack } from "tamagui"
 
 import type { FeedPost } from "@/data/mockFeedPosts"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
-import { translate } from "@/i18n/translate"
 import type { TxKeyPath } from "@/i18n"
+import { translate } from "@/i18n/translate"
 
 import { FeedAvatar } from "./FeedAvatar"
 
