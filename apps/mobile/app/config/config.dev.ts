@@ -9,7 +9,7 @@ import { Platform } from "react-native"
 import Constants from "expo-constants"
 
 /** LAN IP de tu PC en WiFi — actualízala si cambias de red */
-const DEV_LAN_HOST = "192.168.1.132"
+const DEV_LAN_HOST = "192.168.1.40"
 
 function getDevApiHost(): string {
   if (Platform.OS === "web") return "localhost"

@@ -355,6 +355,7 @@ Detalle: [BACKEND.md](./BACKEND.md).
 API_GATEWAY_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=/api
 NEXT_PUBLIC_SITE_URL=http://localhost:5175
+EF_ADMIN_DEV_BYPASS=true
 ```
 
 | Variable | Uso |
@@ -363,6 +364,18 @@ NEXT_PUBLIC_SITE_URL=http://localhost:5175
 | `NEXT_PUBLIC_API_URL` | Base browser (`/api`) |
 | `NEXT_PUBLIC_SITE_URL` | URL canónica |
 | `NEXT_PUBLIC_BUILD_ID` | Opcional en build |
+| `EF_ADMIN_DEV_BYPASS` | `true` → bypass UI sin backend (bloqueado si `NODE_ENV=production`) |
+
+### Bypass UI (solo desarrollo)
+
+Con `EF_ADMIN_DEV_BYPASS=true` y `next dev`, en `/admin/login` aparece **Entrar modo UI (dev)**:
+
+- Cookie sentinel `ef_token=ef-dev-ui-bypass` (sin JWT real)
+- Sesión mock rol **Empresario** (`lib/admin/dev-bypass.ts`)
+- Venues/reservations DAL no llaman al gateway (cancha demo + mocks locales del calendario)
+- Badge «Modo UI (dev)» en el sidebar
+
+Nunca activar en Hostinger / producción.
 
 ### Caché (`next.config.mjs`)
 
@@ -445,6 +458,12 @@ Tras cambiar `NEXT_PUBLIC_*`: Redeploy. Si ves versión vieja: Cache Manager →
 ---
 
 ## Registro de cambios
+
+### 2026-07-31 — Bypass UI portal admin
+
+- [x] `EF_ADMIN_DEV_BYPASS` + `/api/session/dev-bypass` + botón en login
+- [x] Sesión/DAL mock Empresario sin gateway (`lib/admin/dev-bypass.ts`)
+- [x] Servicios complejo: Wifi, Parqueadero (público / de pago), Gradas
 
 ### 2026-07 — Base monorepo + NestJS
 

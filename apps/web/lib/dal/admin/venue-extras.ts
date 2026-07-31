@@ -10,6 +10,13 @@ export type VenueExtras = {
   hasCafeteria: boolean
   hasTransfers: boolean
   hasBathroom: boolean
+  hasWifi: boolean
+  hasParking: boolean
+  /** Parqueadero gratuito / abierto al público */
+  parkingPublic: boolean
+  /** Parqueadero de pago */
+  parkingPaid: boolean
+  hasStands: boolean
 }
 
 export const DEFAULT_VENUE_EXTRAS: VenueExtras = {
@@ -22,6 +29,11 @@ export const DEFAULT_VENUE_EXTRAS: VenueExtras = {
   hasCafeteria: false,
   hasTransfers: false,
   hasBathroom: true,
+  hasWifi: false,
+  hasParking: false,
+  parkingPublic: false,
+  parkingPaid: false,
+  hasStands: false,
 }
 
 export function venueExtrasKey(venueId: string | undefined) {
@@ -46,6 +58,16 @@ export function loadVenueExtras(
       courts6: Math.max(0, Number(parsed.courts6 ?? DEFAULT_VENUE_EXTRAS.courts6)),
       courts8: Math.max(0, Number(parsed.courts8 ?? DEFAULT_VENUE_EXTRAS.courts8)),
       courts11: Math.max(0, Number(parsed.courts11 ?? DEFAULT_VENUE_EXTRAS.courts11)),
+      hasCafeteria: Boolean(parsed.hasCafeteria ?? DEFAULT_VENUE_EXTRAS.hasCafeteria),
+      hasTransfers: Boolean(parsed.hasTransfers ?? DEFAULT_VENUE_EXTRAS.hasTransfers),
+      hasBathroom: Boolean(parsed.hasBathroom ?? DEFAULT_VENUE_EXTRAS.hasBathroom),
+      hasWifi: Boolean(parsed.hasWifi ?? DEFAULT_VENUE_EXTRAS.hasWifi),
+      hasParking: Boolean(parsed.hasParking ?? DEFAULT_VENUE_EXTRAS.hasParking),
+      parkingPublic: Boolean(
+        parsed.parkingPublic ?? DEFAULT_VENUE_EXTRAS.parkingPublic,
+      ),
+      parkingPaid: Boolean(parsed.parkingPaid ?? DEFAULT_VENUE_EXTRAS.parkingPaid),
+      hasStands: Boolean(parsed.hasStands ?? DEFAULT_VENUE_EXTRAS.hasStands),
     }
   } catch {
     return { ...DEFAULT_VENUE_EXTRAS, price6: fallbackPrice }

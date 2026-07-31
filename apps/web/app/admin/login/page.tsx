@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getAdminHomePath, isAdminRole } from '@/lib/admin/roles'
 
 export default function AdminLoginPage() {
@@ -15,10 +15,27 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [devBypassEnabled, setDevBypassEnabled] = useState(false)
+  const [devBypassLoading, setDevBypassLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const accessDenied = searchParams.get('error') === 'access_denied'
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch('/api/session/dev-bypass')
+      .then((res) => res.json())
+      .then((data: { enabled?: boolean }) => {
+        if (!cancelled) setDevBypassEnabled(Boolean(data.enabled))
+      })
+      .catch(() => {
+        if (!cancelled) setDevBypassEnabled(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,6 +76,28 @@ export default function AdminLoginPage() {
       }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleDevBypass = async () => {
+    setDevBypassLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/session/dev-bypass', { method: 'POST' })
+      const data = (await res.json()) as {
+        homePath?: string
+        error?: string
+      }
+      if (!res.ok) {
+        setError(data.error ?? 'No se pudo activar el modo UI.')
+        return
+      }
+      router.push(data.homePath ?? '/admin/reservas')
+      router.refresh()
+    } catch {
+      setError('No se pudo activar el modo UI.')
+    } finally {
+      setDevBypassLoading(false)
     }
   }
 
@@ -110,11 +149,32 @@ export default function AdminLoginPage() {
           <Button
             type="submit"
             className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
-            disabled={isLoading}
+            disabled={isLoading || devBypassLoading}
           >
             {isLoading ? 'Entrando...' : 'Entrar al portal'}
           </Button>
         </form>
+
+        {devBypassEnabled ? (
+          <div className="mt-4 space-y-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">
+              Modo desarrollo
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Entra sin backend para trabajar UI del dashboard (sesión mock
+              Empresario + datos demo).
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full font-heading font-semibold uppercase tracking-wide"
+              disabled={isLoading || devBypassLoading}
+              onClick={() => void handleDevBypass()}
+            >
+              {devBypassLoading ? 'Entrando...' : 'Entrar modo UI (dev)'}
+            </Button>
+          </div>
+        ) : null}
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           ¿Aún no tienes cuenta?{' '}

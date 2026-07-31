@@ -14,7 +14,7 @@ import {
   enrichReservationsForCalendar,
   type CalendarReservation,
 } from '@/lib/dal/admin/mock-reservations'
-import { AddReservationModal, ReservationFormModal } from '@/components/admin/add-reservation-modal'
+import { AddReservationModal, ReservationFormModal, toTelHref } from '@/components/admin/add-reservation-modal'
 
 const PHONE_RESERVATIONS_KEY = 'ef-admin-phone-reservations'
 const EDITED_RESERVATIONS_KEY = 'ef-admin-edited-reservations'
@@ -169,6 +169,9 @@ function ReservationModal({
     event.status === 'pending' || event.status === 'confirmed'
   const canEdit =
     event.status === 'pending' || event.status === 'confirmed'
+  const phoneMatch = event.notes?.match(/Tel:\s*([^·]+)/i)
+  const phone = phoneMatch?.[1]?.trim() ?? ''
+  const telHref = toTelHref(phone)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -251,6 +254,27 @@ function ReservationModal({
               </span>
             </dd>
           </div>
+          {phone ? (
+            <div>
+              <dt className="text-xs text-muted-foreground">Teléfono</dt>
+              <dd className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="font-medium text-foreground">{phone}</span>
+                {telHref ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5"
+                    render={
+                      <a href={telHref} aria-label={`Llamar a ${phone}`} />
+                    }
+                  >
+                    Llamar
+                  </Button>
+                ) : null}
+              </dd>
+            </div>
+          ) : null}
           {event.notes && (
             <div>
               <dt className="text-xs text-muted-foreground">Notas</dt>

@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { nativeSelectClassNameCompact } from '@/lib/ui/native-select'
 import {
   addExtraRoundMatches,
   courtSizeLabel,
@@ -239,7 +240,7 @@ export function TournamentDetail({
               <Label htmlFor="t-size">Formato de cancha</Label>
               <select
                 id="t-size"
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                className={nativeSelectClassNameCompact}
                 value={tournament.courtSize}
                 onChange={(e) =>
                   patch({ courtSize: e.target.value as CourtSize })
@@ -256,7 +257,7 @@ export function TournamentDetail({
               <Label htmlFor="t-format">Tipo de torneo</Label>
               <select
                 id="t-format"
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                className={nativeSelectClassNameCompact}
                 value={tournament.format}
                 onChange={(e) =>
                   patch({ format: e.target.value as TournamentFormat })
@@ -312,7 +313,7 @@ export function TournamentDetail({
               <Label htmlFor="t-status">Estado</Label>
               <select
                 id="t-status"
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                className={nativeSelectClassNameCompact}
                 value={tournament.status}
                 onChange={(e) =>
                   patch({
@@ -396,7 +397,7 @@ export function TournamentDetail({
               <div className="space-y-1">
                 <Label>Canchas simultáneas</Label>
                 <select
-                  className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                  className={nativeSelectClassNameCompact}
                   value={schedule.courtsPerSlot}
                   onChange={(e) =>
                     onChange({
@@ -824,7 +825,7 @@ function MatchEditorModal({
           <div className="space-y-2">
             <Label>Estado</Label>
             <select
-              className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+              className={nativeSelectClassNameCompact}
               value={status}
               onChange={(e) => setStatus(e.target.value as MatchStatus)}
             >

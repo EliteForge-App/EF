@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
-import { X } from 'lucide-react'
+import { Phone, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import {
   type CalendarReservation,
   type CourtSize,
 } from '@/lib/dal/admin/mock-reservations'
+import { nativeSelectClassName } from '@/lib/ui/native-select'
 
 const HOUR_OPTIONS = Array.from({ length: 15 }, (_, i) => i + 8)
 
@@ -42,6 +43,12 @@ function extractPhone(notes: string | null) {
   if (!notes) return ''
   const match = notes.match(/Tel:\s*([^·]+)/i)
   return match?.[1]?.trim() ?? ''
+}
+
+/** Href `tel:` usable en móvil/escritorio (limpia espacios y símbolos). */
+export function toTelHref(phone: string) {
+  const normalized = phone.replace(/[^\d+]/g, '')
+  return normalized.length >= 7 ? `tel:${normalized}` : null
 }
 
 export function draftFromReservation(
@@ -78,11 +85,7 @@ export function applyDraftToReservation(
   const id =
     existing?.id ??
     `phone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-  const phoneNote = draft.phone.trim()
-    ? `Tel: ${draft.phone.trim()} · Reserva telefónica`
-    : existing?.notes?.includes('Tel:')
-      ? 'Reserva telefónica'
-      : existing?.notes ?? 'Reserva telefónica'
+  const phoneNote = `Tel: ${draft.phone.trim()} · Reserva telefónica`
 
   return {
     id,
@@ -100,8 +103,7 @@ export function applyDraftToReservation(
   }
 }
 
-const selectClass =
-  'h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40'
+const selectClass = nativeSelectClassName
 
 export function ReservationFormModal({
   open,
@@ -166,10 +168,16 @@ export function ReservationFormModal({
 
   if (!open) return null
 
+  const callHref = toTelHref(phone)
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (guestName.trim().length < 2) {
       setError('Ingresa el nombre de quien reserva.')
+      return
+    }
+    if (phone.trim().replace(/[^\d]/g, '').length < 7) {
+      setError('Ingresa un teléfono válido (mínimo 7 dígitos).')
       return
     }
     if (!date) {
@@ -250,14 +258,44 @@ export function ReservationFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Teléfono (opcional)</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="300 123 4567"
-            />
+            <Label htmlFor="phone">Teléfono</Label>
+            <div className="flex gap-2">
+              <Input
+                id="phone"
+                type="tel"
+                required
+                inputMode="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="300 123 4567"
+                className="flex-1"
+              />
+              {callHref ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0 gap-2"
+                  render={
+                    <a href={callHref} aria-label={`Llamar a ${phone}`} />
+                  }
+                >
+                  <Phone className="h-4 w-4" />
+                  Llamar
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0 gap-2"
+                  disabled
+                  title="Ingresa un teléfono válido para llamar"
+                >
+                  <Phone className="h-4 w-4" />
+                  Llamar
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

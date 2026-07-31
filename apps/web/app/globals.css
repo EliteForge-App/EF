@@ -167,6 +167,22 @@
   html {
     @apply font-sans;
   }
+
+  /*
+   * Native <select> dropdown: on Windows/Chrome the popup often keeps a light
+   * surface while inheriting light text from the dark theme → unreadable.
+   * Force dark option text so labels stay visible on that OS popup.
+   */
+  select.ef-native-select {
+    background-color: var(--input);
+    color: var(--foreground);
+  }
+
+  select.ef-native-select option,
+  select.ef-native-select optgroup {
+    background-color: #ffffff;
+    color: #1a1a1a;
+  }
 }
 
 @layer utilities {

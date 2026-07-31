@@ -1,6 +1,10 @@
 import { redirect } from 'next/navigation'
 import { apiFetchAuth } from '@/lib/api/server-client'
 import { getAdminHomePath, isAdminRole } from '@/lib/admin/roles'
+import {
+  getDevBypassSession,
+  isDevBypassSessionActive,
+} from '@/lib/admin/dev-bypass'
 
 export interface AuthMeUser {
   id: string
@@ -10,6 +14,10 @@ export interface AuthMeUser {
 }
 
 export async function getAdminSession() {
+  if (await isDevBypassSessionActive()) {
+    return getDevBypassSession()
+  }
+
   try {
     const me = await apiFetchAuth<AuthMeUser>('auth/me')
 

@@ -282,6 +282,61 @@ export function VenueSettingsForm({ venue }: { venue: VenueFormBase | null }) {
             checked={extras.hasBathroom}
             onChange={(v) => setExtras((p) => ({ ...p, hasBathroom: v }))}
           />
+          <AmenityToggle
+            id="wifi"
+            label="Wifi"
+            description="Red Wi‑Fi disponible para jugadores y acompañantes"
+            checked={extras.hasWifi}
+            onChange={(v) => setExtras((p) => ({ ...p, hasWifi: v }))}
+          />
+
+          <div className="space-y-2">
+            <AmenityToggle
+              id="parking"
+              label="Parqueadero"
+              description="Estacionamiento en el complejo"
+              checked={extras.hasParking}
+              onChange={(v) =>
+                setExtras((p) => ({
+                  ...p,
+                  hasParking: v,
+                  ...(v
+                    ? {}
+                    : { parkingPublic: false, parkingPaid: false }),
+                }))
+              }
+            />
+            {extras.hasParking ? (
+              <div className="ml-2 grid gap-2 border-l-2 border-primary/40 pl-3 sm:grid-cols-2">
+                <AmenityToggle
+                  id="parking-public"
+                  label="Público"
+                  description="Acceso gratuito / abierto al público"
+                  checked={extras.parkingPublic}
+                  onChange={(v) =>
+                    setExtras((p) => ({ ...p, parkingPublic: v }))
+                  }
+                />
+                <AmenityToggle
+                  id="parking-paid"
+                  label="De pago"
+                  description="Cobro por uso del parqueadero"
+                  checked={extras.parkingPaid}
+                  onChange={(v) =>
+                    setExtras((p) => ({ ...p, parkingPaid: v }))
+                  }
+                />
+              </div>
+            ) : null}
+          </div>
+
+          <AmenityToggle
+            id="stands"
+            label="Gradas para el público"
+            description="Espacio de gradas para espectadores"
+            checked={extras.hasStands}
+            onChange={(v) => setExtras((p) => ({ ...p, hasStands: v }))}
+          />
         </div>
       </section>
 

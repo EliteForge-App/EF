@@ -23,6 +23,7 @@ import {
   type Tournament,
   type TournamentFormat,
 } from '@/lib/dal/admin/tournaments'
+import { nativeSelectClassNameCompact } from '@/lib/ui/native-select'
 
 export function TournamentsDashboard() {
   const [items, setItems] = useState<Tournament[]>([])
@@ -139,7 +140,7 @@ export function TournamentsDashboard() {
               <Label htmlFor="new-size">Cancha</Label>
               <select
                 id="new-size"
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                className={nativeSelectClassNameCompact}
                 value={draftSize}
                 onChange={(e) => setDraftSize(e.target.value as CourtSize)}
               >
@@ -158,7 +159,7 @@ export function TournamentsDashboard() {
               <Label htmlFor="new-format">Modalidad</Label>
               <select
                 id="new-format"
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                className={nativeSelectClassNameCompact}
                 value={draftFormat}
                 onChange={(e) =>
                   setDraftFormat(e.target.value as TournamentFormat)
@@ -254,7 +255,7 @@ export function TournamentsDashboard() {
               <div className="space-y-1">
                 <Label>Canchas</Label>
                 <select
-                  className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                  className={nativeSelectClassNameCompact}
                   value={draftSchedule.courtsPerSlot}
                   onChange={(e) =>
                     setDraftSchedule((s) => ({

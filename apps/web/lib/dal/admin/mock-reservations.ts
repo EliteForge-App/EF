@@ -207,6 +207,8 @@ export function buildDemoReservations(venueName = 'Cancha Elite Demo'): Calendar
   return specs.map((spec) => {
     const starts = atLocalDay(today, spec.dayOffset, spec.startHour)
     const ends = new Date(starts.getTime() + spec.durationHours * 60 * 60 * 1000)
+    const phoneSuffix = String(1000000 + hashIndex(spec.id, 9000000)).slice(0, 7)
+    const phone = `300 ${phoneSuffix.slice(0, 3)} ${phoneSuffix.slice(3)}`
     return {
       id: spec.id,
       user_id: `demo-user-${spec.id}`,
@@ -215,7 +217,7 @@ export function buildDemoReservations(venueName = 'Cancha Elite Demo'): Calendar
       starts_at: starts.toISOString(),
       ends_at: ends.toISOString(),
       status: spec.status,
-      notes: spec.name,
+      notes: `Tel: ${phone} · Reserva demo`,
       created_at: today.toISOString(),
       guest_name: spec.name,
       court_size: spec.court_size,

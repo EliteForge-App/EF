@@ -89,7 +89,13 @@ function AdminNav({ pathname, compact }: { pathname: string; compact?: boolean }
   )
 }
 
-export function AdminSidebar({ role }: { role: AdminRole }) {
+export function AdminSidebar({
+  role,
+  devBypass = false,
+}: {
+  role: AdminRole
+  devBypass?: boolean
+}) {
   const pathname = usePathname()
   const isAdmin = role === 'Administrador'
 
@@ -102,6 +108,11 @@ export function AdminSidebar({ role }: { role: AdminRole }) {
           </Link>
           <AdminLogoutButton />
         </div>
+        {devBypass ? (
+          <p className="px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-amber-600">
+            Modo UI (dev) · sin backend
+          </p>
+        ) : null}
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3">
           {isAdmin ? (
             <AdminNav pathname={pathname} compact />
@@ -119,6 +130,11 @@ export function AdminSidebar({ role }: { role: AdminRole }) {
           <p className="mt-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-primary">
             Portal Admin
           </p>
+          {devBypass ? (
+            <p className="mt-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-amber-600">
+              Modo UI (dev) · sin backend
+            </p>
+          ) : null}
         </div>
 
         <nav className="mt-6 flex flex-1 flex-col gap-1 overflow-y-auto">
