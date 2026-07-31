@@ -21,15 +21,23 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
 
-    if (!EMAIL_REGEX.test(email)) {
+    const normalizedEmail = email.trim().toLowerCase()
+
+    if (!EMAIL_REGEX.test(normalizedEmail) || normalizedEmail.length > 254) {
       setError('Introduce un correo electrónico válido.')
+      setIsLoading(false)
+      return
+    }
+
+    if (password.length < 8 || password.length > 72) {
+      setError('La contraseña debe tener entre 8 y 72 caracteres.')
       setIsLoading(false)
       return
     }
 
     try {
       await login({
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
         password,
       })
       setError(
@@ -37,11 +45,13 @@ export default function LoginPage() {
       )
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(
-          err.status === 401
-            ? 'Correo o contraseña incorrectos.'
-            : err.message,
-        )
+        if (err.status === 401) {
+          setError('Correo o contraseña incorrectos.')
+        } else if (err.status === 429) {
+          setError('Demasiados intentos. Espera un momento e inténtalo de nuevo.')
+        } else {
+          setError(err.message)
+        }
       } else {
         setError(
           'No se pudo conectar con el servidor. ¿Está el backend activo en el puerto 3000?',

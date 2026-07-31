@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M}\s'.-]*$/u
+const PASSWORD_COMPLEXITY = /^(?=.*[A-Za-z])(?=.*\d).+$/
 
 export default function SignUpPage() {
   const [fullName, setFullName] = useState('')
@@ -26,21 +28,34 @@ export default function SignUpPage() {
     setError(null)
 
     const trimmedName = fullName.trim()
+    const normalizedEmail = email.trim().toLowerCase()
 
-    if (trimmedName.length < 2) {
-      setError('El nombre debe tener al menos 2 caracteres.')
+    if (trimmedName.length < 2 || trimmedName.length > 80) {
+      setError('El nombre debe tener entre 2 y 80 caracteres.')
       setIsLoading(false)
       return
     }
 
-    if (!EMAIL_REGEX.test(email)) {
+    if (!NAME_REGEX.test(trimmedName)) {
+      setError('El nombre contiene caracteres no válidos.')
+      setIsLoading(false)
+      return
+    }
+
+    if (!EMAIL_REGEX.test(normalizedEmail) || normalizedEmail.length > 254) {
       setError('Introduce un correo electrónico válido.')
       setIsLoading(false)
       return
     }
 
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+    if (password.length < 8 || password.length > 72) {
+      setError('La contraseña debe tener entre 8 y 72 caracteres.')
+      setIsLoading(false)
+      return
+    }
+
+    if (!PASSWORD_COMPLEXITY.test(password)) {
+      setError('La contraseña debe incluir al menos una letra y un número.')
       setIsLoading(false)
       return
     }
@@ -54,17 +69,19 @@ export default function SignUpPage() {
     try {
       await register({
         name: trimmedName,
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
         password,
       })
       router.push('/auth/confirmed')
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(
-          err.status === 401
-            ? 'Este correo ya está registrado. Prueba a iniciar sesión.'
-            : err.message,
-        )
+        if (err.status === 409) {
+          setError('Este correo ya está registrado. Prueba a iniciar sesión.')
+        } else if (err.status === 429) {
+          setError('Demasiados intentos. Espera un momento e inténtalo de nuevo.')
+        } else {
+          setError(err.message)
+        }
       } else {
         setError(
           'No se pudo conectar con el servidor. ¿Está el backend activo en el puerto 3000?',

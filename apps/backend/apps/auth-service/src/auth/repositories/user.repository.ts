@@ -15,6 +15,7 @@ export interface AuthUserRecord {
   passwordHash: string;
   name: string;
   role: string;
+  estado: boolean;
 }
 
 @Injectable()
@@ -98,6 +99,7 @@ export class UserRepository {
     passwordHash: string;
     firstname: string;
     lastname: string;
+    estado: boolean;
     role: { name: string };
   }): AuthUserRecord {
     return {
@@ -109,6 +111,7 @@ export class UserRepository {
         .filter(Boolean)
         .join(' '),
       role: user.role.name,
+      estado: user.estado,
     };
   }
 }

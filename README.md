@@ -346,16 +346,19 @@ import { Button, Card, Logo, Navbar, Toggle } from "@/components/ui"
 
 ### Endpoints API Gateway
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/api/health` | Health check |
-| POST | `/api/auth/login` | Iniciar sesión |
-| POST | `/api/auth/register` | Registro |
-| POST | `/api/auth/validate` | Validar token JWT |
-| GET | `/api/users/:id` | Obtener perfil |
-| PATCH | `/api/users/:id/profile` | Actualizar perfil |
-| GET | `/api/users/:id/preferences` | Obtener preferencias (MongoDB) |
-| PATCH | `/api/users/:id/preferences` | Actualizar preferencias |
+Detalle de flujos, User/Profile y permisos: **[docs/BACKEND.md](./docs/BACKEND.md)**.
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/api/health` | No | Health check |
+| POST | `/api/auth/register` | No | Registro (User + Profile, rol Jugador) |
+| POST | `/api/auth/login` | No | Login → JWT |
+| GET | `/api/auth/me` | JWT | Usuario autenticado |
+| POST | `/api/auth/validate` | Body `token` | Validar JWT |
+| GET | `/api/users/:id` | JWT | Perfil (propietario o Administrador) |
+| PATCH | `/api/users/:id/profile` | JWT | Actualizar perfil |
+| GET | `/api/users/:id/preferences` | JWT | Preferencias (MongoDB) |
+| PATCH | `/api/users/:id/preferences` | JWT | Actualizar preferencias |
 
 ## Kubernetes
 

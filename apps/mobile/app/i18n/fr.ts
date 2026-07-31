@@ -45,6 +45,7 @@ const fr: Translations = {
     signingIn: "Connexion en cours...",
     emptyFields: "Veuillez saisir votre e-mail et votre mot de passe.",
     invalidEmail: "Veuillez saisir une adresse e-mail valide.",
+    passwordLength: "Le mot de passe doit contenir entre 8 et 72 caractères.",
     invalidCredentials: "E-mail ou mot de passe incorrect.",
     cannotConnect: "Impossible de se connecter au serveur. Vérifiez votre connexion.",
     serverError: "Erreur serveur. Veuillez réessayer plus tard.",

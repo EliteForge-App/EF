@@ -45,6 +45,7 @@ const ja: Translations = {
     signingIn: "ログイン中...",
     emptyFields: "メールアドレスとパスワードを入力してください。",
     invalidEmail: "有効なメールアドレスを入力してください。",
+    passwordLength: "パスワードは8〜72文字である必要があります。",
     invalidCredentials: "メールアドレスまたはパスワードが正しくありません。",
     cannotConnect: "サーバーに接続できません。接続を確認して再試行してください。",
     serverError: "サーバーエラーです。後でもう一度お試しください。",

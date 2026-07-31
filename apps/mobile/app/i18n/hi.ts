@@ -44,6 +44,7 @@ const hi: Translations = {
     signingIn: "लॉग इन हो रहा है...",
     emptyFields: "कृपया ईमेल और पासवर्ड दर्ज करें।",
     invalidEmail: "कृपया एक मान्य ईमेल पता दर्ज करें।",
+    passwordLength: "पासवर्ड 8 से 72 अक्षरों के बीच होना चाहिए।",
     invalidCredentials: "ईमेल या पासवर्ड गलत है।",
     cannotConnect: "सर्वर से कनेक्ट नहीं हो सका। अपना कनेक्शन जांचें।",
     serverError: "सर्वर त्रुटि। बाद में पुनः प्रयास करें।",
