@@ -1,4 +1,3 @@
-/* eslint-disable  react-native/no-inline-styles */
 import { StyleProp, View, ViewStyle } from "react-native"
 
 import { useAppTheme } from "@/theme/context"

@@ -9,29 +9,28 @@ export interface AuthFormCardProps extends ViewProps {
   children: ReactNode
 }
 
-export function AuthFormCard({ children, ...props }: AuthFormCardProps) {
+export function AuthFormCard({ children, style, ...props }: AuthFormCardProps) {
   const motion = useInteractiveMotion("card")
 
   return (
-    <View {...motion.hoverHandlers} {...props}>
-      <Animated.View style={motion.animatedStyle}>
+    <View style={[{ width: "100%" }, style]} {...motion.hoverHandlers} {...props}>
+      <Animated.View style={[{ width: "100%" }, motion.animatedStyle]}>
         <YStack
           width="100%"
-          bg="#363636"
+          backgroundColor="#363636"
           borderRadius={16}
           overflow="hidden"
           borderWidth={1}
           borderColor="#555555"
-          animation="quick"
           hoverStyle={
             Platform.OS === "web"
-              ? { borderColor: "#00CEC8", bg: "#3a3a3a" }
+              ? { borderColor: "#00CEC8", backgroundColor: "#3a3a3a" }
               : undefined
           }
         >
           <XStack height={3} width="100%">
-            <YStack flex={1} bg="#00CEC8" />
-            <YStack flex={1} bg="#FF8C00" />
+            <YStack flex={1} backgroundColor="#00CEC8" />
+            <YStack flex={1} backgroundColor="#FF8C00" />
           </XStack>
 
           {children}

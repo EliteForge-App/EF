@@ -1,21 +1,21 @@
 import { FC, useCallback, useState } from "react"
-import { KeyboardAvoidingView, Platform, StatusBar } from "react-native"
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StatusBar } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import { ScrollView, Text, XStack, YStack } from "tamagui"
 
 import {
   AuthFormCard,
   Button,
-  Divider,
   EliteForgeLogo,
   Input,
   LinkText,
   SocialButton,
 } from "@/components/ui"
+import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
-import Config from "@/config"
 import { api } from "@/services/api"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 import { openLinkInBrowser } from "@/utils/openLinkInBrowser"
@@ -23,6 +23,11 @@ import { openLinkInBrowser } from "@/utils/openLinkInBrowser"
 type LoginScreenProps = AppStackScreenProps<"Login">
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const UI_PREVIEW_TOKEN = "dev-ui-preview-token"
+const UI_PREVIEW_EMAIL = "ui-preview@eliteforge.local"
+
+/** Altura unificada input / botón login (fila responsive) */
+const FIELD_HEIGHT = 44
 
 export const LoginScreen: FC<LoginScreenProps> = () => {
   const [username, setUsername] = useState("")
@@ -38,13 +43,19 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
     contentMaxWidth,
     sectionGap,
     isSmallScreen,
+    isTablet,
     keyboardVerticalOffset,
+    screenWidth,
   } = useResponsiveLayout()
 
-  /**
-   * Inicia sesión contra el API Gateway (POST /api/auth/login).
-   * El token se persiste en MMKV vía AuthContext; AppNavigator redirige a Welcome.
-   */
+  const loginBtnMinWidth = isSmallScreen
+    ? Math.min(118, Math.round(screenWidth * 0.32))
+    : isTablet
+      ? 148
+      : 132
+  const cardPadding = isSmallScreen ? 14 : isTablet ? 20 : 16
+  const cardGap = isSmallScreen ? 12 : 16
+
   const handleLogin = useCallback(async () => {
     if (isLoading) return
 
@@ -102,9 +113,42 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
     openLinkInBrowser(Config.SIGN_UP_URL)
   }, [])
 
+  const handleUiPreview = useCallback(() => {
+    setErrorMessage("")
+    setAuthEmail(UI_PREVIEW_EMAIL)
+    setAuthToken(UI_PREVIEW_TOKEN)
+  }, [setAuthEmail, setAuthToken])
+
+  const handleSettings = useCallback(() => {
+    Alert.alert(translate("feedDrawer:comingSoonTitle"), translate("loginScreen:settingsSoon"))
+  }, [])
+
   return (
     <YStack flex={1} backgroundColor={eliteForgeColors.carbon}>
       <StatusBar barStyle="light-content" backgroundColor={eliteForgeColors.carbon} />
+
+      <Pressable
+        onPress={handleSettings}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel={translate("loginScreen:settingsSoon")}
+        style={{
+          position: "absolute",
+          top: insets.top + 8,
+          right: Math.max(horizontalPadding, 16),
+          zIndex: 20,
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#2e2e2e",
+          borderWidth: 1,
+          borderColor: "#555555",
+        }}
+      >
+        <Ionicons name="settings-outline" size={20} color="rgba(255,255,255,0.8)" />
+      </Pressable>
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -116,7 +160,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
           contentContainerStyle={{
             flexGrow: 1,
             alignItems: "center",
-            paddingTop: insets.top + (isSmallScreen ? 12 : 20),
+            paddingTop: insets.top + (isSmallScreen ? 8 : 16),
             paddingBottom: insets.bottom + 24,
             paddingHorizontal: horizontalPadding,
           }}
@@ -130,6 +174,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
             alignItems="center"
             flex={1}
             justifyContent={isSmallScreen ? "flex-start" : "center"}
+            paddingTop={isSmallScreen ? 8 : 4}
           >
             <EliteForgeLogo />
 
@@ -138,12 +183,13 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
               opacity={0.65}
               fontSize={isSmallScreen ? 13 : 14}
               textAlign="center"
+              paddingHorizontal={8}
             >
               {translate("loginScreen:subtitle")}
             </Text>
 
             <AuthFormCard>
-              <YStack gap={isSmallScreen ? 14 : 16} padding={isSmallScreen ? 14 : 16}>
+              <YStack gap={cardGap} padding={cardPadding}>
                 <Input
                   label={translate("loginScreen:usernameFieldLabel")}
                   placeholder={translate("loginScreen:usernameFieldPlaceholder")}
@@ -157,17 +203,42 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
                   textContentType="emailAddress"
                 />
 
-                <Input
-                  label={translate("loginScreen:passwordFieldLabel")}
-                  placeholder={translate("loginScreen:passwordFieldPlaceholder")}
-                  value={password}
-                  onChangeText={(text) => {
-                    setPassword(text)
-                    if (errorMessage) setErrorMessage("")
-                  }}
-                  secureTextEntry
-                  autoComplete="password"
-                />
+                {/* Fila del video: contraseña (flex) + Iniciar sesión */}
+                <YStack gap="$2" width="100%">
+                  <Text color="$efWhite" fontSize="$3" fontWeight="600" opacity={0.9}>
+                    {translate("loginScreen:passwordFieldLabel")}
+                  </Text>
+                  <XStack width="100%" alignItems="center" gap={isSmallScreen ? 8 : 10}>
+                    <YStack flex={1} minWidth={0}>
+                      <Input
+                        label=""
+                        hideLabel
+                        placeholder={translate("loginScreen:passwordFieldPlaceholder")}
+                        value={password}
+                        onChangeText={(text) => {
+                          setPassword(text)
+                          if (errorMessage) setErrorMessage("")
+                        }}
+                        secureTextEntry
+                        autoComplete="password"
+                      />
+                    </YStack>
+
+                    <Button
+                      onPress={handleLogin}
+                      disabled={isLoading}
+                      opacity={isLoading ? 0.7 : 1}
+                      height={FIELD_HEIGHT}
+                      minWidth={loginBtnMinWidth}
+                      px={isSmallScreen ? "$2.5" : "$3"}
+                      fontSize={isSmallScreen ? 13 : 14}
+                    >
+                      {isLoading
+                        ? translate("loginScreen:signingInShort")
+                        : translate("loginScreen:signInButton")}
+                    </Button>
+                  </XStack>
+                </YStack>
 
                 {errorMessage ? (
                   <Text
@@ -180,41 +251,45 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
                   </Text>
                 ) : null}
 
-                <Button width="100%" onPress={handleLogin} disabled={isLoading} opacity={isLoading ? 0.7 : 1}>
-                  {isLoading
-                    ? translate("loginScreen:signingIn")
-                    : translate("loginScreen:signInButton")}
-                </Button>
+                {/* Crear cuenta a la izquierda · Facebook/Gmail a la derecha (como web) */}
+                <XStack
+                  width="100%"
+                  alignItems="center"
+                  gap={isSmallScreen ? 8 : 10}
+                  flexWrap="nowrap"
+                >
+                  <YStack flex={1} minWidth={0} alignItems="flex-start" justifyContent="center">
+                    <LinkText
+                      align="flex-start"
+                      prompt={translate("loginScreen:createAccountPrompt")}
+                      linkLabel={translate("loginScreen:createAccountLink")}
+                      onPress={handleCreateAccount}
+                    />
+                  </YStack>
 
-                <LinkText
-                  prompt={translate("loginScreen:createAccountPrompt")}
-                  linkLabel={translate("loginScreen:createAccountLink")}
-                  onPress={handleCreateAccount}
-                />
+                  <XStack alignItems="center" gap={isSmallScreen ? 8 : 10} flexShrink={0}>
+                    <SocialButton
+                      iconOnly
+                      provider="facebook"
+                      label={translate("loginScreen:facebookButton")}
+                      onPress={() => undefined}
+                    />
+                    <SocialButton
+                      iconOnly
+                      provider="google"
+                      label={translate("loginScreen:googleButton")}
+                      onPress={() => undefined}
+                    />
+                  </XStack>
+                </XStack>
+
+                {__DEV__ ? (
+                  <Button variant="outline" width="100%" onPress={handleUiPreview}>
+                    {translate("loginScreen:uiPreviewButton")}
+                  </Button>
+                ) : null}
               </YStack>
             </AuthFormCard>
-
-            <YStack width="100%" gap={isSmallScreen ? 10 : 12}>
-              <Divider label={translate("loginScreen:continueWith")} />
-
-              <XStack width="100%" gap={isSmallScreen ? 8 : 10}>
-                <SocialButton
-                  compact
-                  provider="google"
-                  label={translate("loginScreen:googleButton")}
-                  compactLabel={translate("loginScreen:googleButtonShort")}
-                  onPress={() => undefined}
-                />
-
-                <SocialButton
-                  compact
-                  provider="facebook"
-                  label={translate("loginScreen:facebookButton")}
-                  compactLabel={translate("loginScreen:facebookButtonShort")}
-                  onPress={() => undefined}
-                />
-              </XStack>
-            </YStack>
           </YStack>
         </ScrollView>
       </KeyboardAvoidingView>

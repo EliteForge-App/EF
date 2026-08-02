@@ -8,10 +8,9 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 
 import Config from "@/config"
-import type { AuthApiResponse, EpisodeItem } from "@/services/api/types"
+import type { AuthApiResponse, EpisodeItem, ApiConfig, ApiFeedResponse } from "@/services/api/types"
 
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type { ApiConfig, ApiFeedResponse } from "./types"
 
 export type { AuthApiResponse, AuthUser } from "./types"
 
@@ -52,8 +51,7 @@ export class Api {
     email: string,
     password: string,
   ): Promise<
-    | { kind: "ok"; accessToken: string; user: AuthApiResponse["user"] }
-    | GeneralApiProblem
+    { kind: "ok"; accessToken: string; user: AuthApiResponse["user"] } | GeneralApiProblem
   > {
     const response = await this.apisauce.post<AuthApiResponse>("auth/login", {
       email,

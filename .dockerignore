@@ -2,9 +2,11 @@
 node_modules
 **/node_modules
 
-# Mobile: solo se necesita package.json para sincronizar el lockfile del workspace
+# Frontends: solo package.json para sincronizar el lockfile del workspace
 apps/mobile/**
 !apps/mobile/package.json
+apps/web/**
+!apps/web/package.json
 
 # Artefactos y entorno local
 apps/backend/dist

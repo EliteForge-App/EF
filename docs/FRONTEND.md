@@ -295,6 +295,12 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
 ## Registro de cambios (sesión de implementación)
 
+### 2026-07-31 — Fix lint CI (prettier + TextInput)
+
+- [x] `eslint --fix` en mobile: Prettier e `import/order` en UI, login y feed
+- [x] `FeedComposeModal` usa `TextField` en lugar de `TextInput` de `react-native` (regla `no-restricted-imports`)
+- [x] `npm run lint:check` sin errores (quedan warnings i18n demo)
+
 ### 2026-07-17 — Fix Android monorepo (react-native-worklets)
 
 - [x] Causa: `android/build/generated/autolinking/autolinking.json` apuntaba a `apps/mobile/node_modules/*` (hoist npm workspaces → raíz)

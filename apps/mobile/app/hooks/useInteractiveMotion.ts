@@ -63,9 +63,7 @@ export function useInteractiveMotion(preset: MotionPreset = "button") {
   }))
 
   const hoverHandlers =
-    Platform.OS === "web"
-      ? { onMouseEnter: onHoverIn, onMouseLeave: onHoverOut }
-      : {}
+    Platform.OS === "web" ? { onMouseEnter: onHoverIn, onMouseLeave: onHoverOut } : {}
 
   return {
     animatedStyle,

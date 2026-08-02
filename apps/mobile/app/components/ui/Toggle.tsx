@@ -9,7 +9,7 @@ export function Toggle({ label, description, id, ...props }: AppToggleProps) {
   const switchId = id ?? label?.toLowerCase().replace(/\s+/g, "-")
 
   return (
-    <XStack ai="center" jc="space-between" gap="$3" py="$2">
+    <XStack alignItems="center" justifyContent="space-between" gap="$3" py="$2">
       <YStack flex={1} gap="$1">
         {label ? (
           <Label htmlFor={switchId} fontSize="$4" fontWeight="600">
@@ -23,7 +23,7 @@ export function Toggle({ label, description, id, ...props }: AppToggleProps) {
         ) : null}
       </YStack>
       <Switch id={switchId} size="$3" bg={props.checked ? "$blue10" : "$gray6"} {...props}>
-        <Switch.Thumb animation="quick" />
+        <Switch.Thumb />
       </Switch>
     </XStack>
   )
