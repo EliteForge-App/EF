@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserPreferences as UserPreferencesContract } from '@ef/contracts';
+import {
+  UpdatePreferencesDto,
+  UserPreferences as UserPreferencesContract,
+} from '@ef/contracts';
 import {
   UserPreferences,
   UserPreferencesDocument,
@@ -24,7 +27,7 @@ export class UserPreferencesRepository {
 
   async upsert(
     userId: string,
-    preferences: Record<string, unknown>,
+    preferences: UpdatePreferencesDto['preferences'],
   ): Promise<UserPreferencesContract> {
     const doc = await this.model
       .findOneAndUpdate(

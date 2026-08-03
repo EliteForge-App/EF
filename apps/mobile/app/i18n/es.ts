@@ -45,6 +45,7 @@ const es: Translations = {
     signingIn: "Iniciando sesión...",
     emptyFields: "Ingresa tu correo y contraseña.",
     invalidEmail: "Ingresa un correo electrónico válido.",
+    passwordLength: "La contraseña debe tener entre 8 y 72 caracteres.",
     invalidCredentials: "Correo o contraseña incorrectos.",
     cannotConnect: "No se pudo conectar al servidor. Revisa tu conexión e inténtalo de nuevo.",
     serverError: "Error del servidor. Inténtalo más tarde.",

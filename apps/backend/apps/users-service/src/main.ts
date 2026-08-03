@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { HttpToRpcExceptionFilter } from '@ef/common';
+import { HttpToRpcExceptionFilter, globalValidationPipe } from '@ef/common';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
@@ -20,6 +20,7 @@ async function bootstrap(): Promise<void> {
     },
   );
 
+  app.useGlobalPipes(globalValidationPipe);
   app.useGlobalFilters(new HttpToRpcExceptionFilter());
 
   await app.listen();

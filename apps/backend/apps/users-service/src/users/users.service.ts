@@ -1,5 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UpdateProfileDto, UserPreferences, UserProfile } from '@ef/contracts';
+import {
+  UpdatePreferencesDto,
+  UpdateProfileDto,
+  UserPreferences,
+  UserProfile,
+} from '@ef/contracts';
 import { UserProfileRepository } from './repositories/user-profile.repository';
 import { UserPreferencesRepository } from './repositories/user-preferences.repository';
 
@@ -48,8 +53,8 @@ export class UsersService {
 
   updatePreferences(
     userId: string,
-    preferences: Record<string, unknown>,
+    dto: UpdatePreferencesDto,
   ): Promise<UserPreferences> {
-    return this.preferencesRepository.upsert(userId, preferences);
+    return this.preferencesRepository.upsert(userId, dto.preferences);
   }
 }

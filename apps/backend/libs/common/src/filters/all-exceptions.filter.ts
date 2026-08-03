@@ -22,10 +22,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
+    const raw =
       exception instanceof HttpException
         ? exception.getResponse()
         : 'Internal server error';
+
+    // Nest a menudo devuelve { statusCode, message, error }; exponer solo message
+    // para que clientes (web ApiError) lean string | string[] correctamente.
+    const message =
+      typeof raw === 'string'
+        ? raw
+        : typeof raw === 'object' &&
+            raw !== null &&
+            'message' in raw &&
+            (typeof (raw as { message: unknown }).message === 'string' ||
+              Array.isArray((raw as { message: unknown }).message))
+          ? (raw as { message: string | string[] }).message
+          : raw;
 
     this.logger.error(
       `${request.method} ${request.url}`,
@@ -40,3 +53,4 @@ export class AllExceptionsFilter implements ExceptionFilter {
     });
   }
 }
+

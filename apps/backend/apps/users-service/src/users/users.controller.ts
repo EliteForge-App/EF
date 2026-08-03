@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { MESSAGE_PATTERNS } from '@ef/common';
-import { UpdateProfileDto } from '@ef/contracts';
+import { UpdatePreferencesDto, UpdateProfileDto } from '@ef/contracts';
 import { UsersService } from './users.service';
 
 @Controller()
@@ -26,8 +26,9 @@ export class UsersController {
 
   @MessagePattern(MESSAGE_PATTERNS.USERS.UPDATE_PREFERENCES)
   updatePreferences(
-    @Payload() data: { userId: string; preferences: Record<string, unknown> },
+    @Payload() data: UpdatePreferencesDto & { userId: string },
   ) {
-    return this.usersService.updatePreferences(data.userId, data.preferences);
+    const { userId, preferences } = data;
+    return this.usersService.updatePreferences(userId, { preferences });
   }
 }

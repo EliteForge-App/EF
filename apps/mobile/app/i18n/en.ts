@@ -43,6 +43,7 @@ const en = {
     signingIn: "Signing in...",
     emptyFields: "Please enter your email and password.",
     invalidEmail: "Please enter a valid email address.",
+    passwordLength: "Password must be between 8 and 72 characters.",
     invalidCredentials: "Incorrect email or password.",
     cannotConnect: "Could not connect to the server. Check your connection and try again.",
     serverError: "Server error. Please try again later.",

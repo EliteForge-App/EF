@@ -1,10 +1,12 @@
 import {
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import {
   AuthMeResponse,
@@ -16,6 +18,16 @@ import {
 } from '@ef/contracts';
 import { UserRepository } from './repositories/user.repository';
 
+/** Coste bcrypt (OWASP recomienda ≥10; 12 equilibra seguridad y latencia). */
+const BCRYPT_ROUNDS = 12;
+
+/**
+ * Hash bcrypt válido solo para igualar el tiempo de respuesta cuando el email
+ * no existe (mitiga user enumeration por timing).
+ */
+const DUMMY_PASSWORD_HASH =
+  '$2b$12$k1.hn/TdgBAYIFkDb3F2i.pQa2SpaP9eYOYbVt2SRPX0ax4UtcDmK';
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -26,26 +38,40 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
+    const email = dto.email.trim().toLowerCase();
+    const name = dto.name.trim();
+
     try {
-      const existing = await this.userRepository.findByEmail(dto.email);
+      const existing = await this.userRepository.findByEmail(email);
       if (existing) {
-        throw new UnauthorizedException('Email already registered');
+        throw new ConflictException('Email already registered');
       }
 
-      const passwordHash = await bcrypt.hash(dto.password, 10);
+      const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
       const user = await this.userRepository.create({
-        email: dto.email,
+        email,
         passwordHash,
-        name: dto.name,
+        name,
       });
 
       return await this.buildAuthResponse(user);
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
+      if (
+        error instanceof ConflictException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
+
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Email already registered');
+      }
+
       this.logger.error(
-        `register failed for ${dto.email}`,
+        `register failed for ${email}`,
         error instanceof Error ? error.stack : String(error),
       );
       throw error;
@@ -53,14 +79,16 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
-    try {
-      const user = await this.userRepository.findByEmail(dto.email);
-      if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
+    const email = dto.email.trim().toLowerCase();
 
-      const valid = await bcrypt.compare(dto.password, user.passwordHash);
-      if (!valid) {
+    try {
+      const user = await this.userRepository.findByEmail(email);
+
+      // Siempre comparar hash para no filtrar existencia por tiempo de respuesta.
+      const hash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
+      const passwordOk = await bcrypt.compare(dto.password, hash);
+
+      if (!user || !user.estado || !passwordOk) {
         throw new UnauthorizedException('Invalid credentials');
       }
 
@@ -70,7 +98,7 @@ export class AuthService {
         throw error;
       }
       this.logger.error(
-        `login failed for ${dto.email}`,
+        `login failed for ${email}`,
         error instanceof Error ? error.stack : String(error),
       );
       throw error;
@@ -79,7 +107,7 @@ export class AuthService {
 
   async getMe(userId: string): Promise<AuthMeResponse> {
     const user = await this.userRepository.findById(userId);
-    if (!user) {
+    if (!user || !user.estado) {
       throw new NotFoundException('User not found');
     }
 
@@ -94,15 +122,23 @@ export class AuthService {
   async validateToken(token: string): Promise<ValidateTokenResponse> {
     try {
       const payload = await this.jwtService.verifyAsync<AuthTokenPayload>(token);
+      const user = await this.userRepository.findById(payload.sub);
+
+      // Firma JWT válida no basta: alinear con usuario real y estado en BD.
+      if (!user || !user.estado) {
+        return { valid: false };
+      }
+
       return {
         valid: true,
-        userId: payload.sub,
-        email: payload.email,
+        userId: user.id,
+        email: user.email,
       };
     } catch {
       return { valid: false };
     }
   }
+
 
   private async buildAuthResponse(user: {
     id: string;

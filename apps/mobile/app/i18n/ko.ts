@@ -44,6 +44,7 @@ const ko: Translations = {
     signingIn: "로그인 중...",
     emptyFields: "이메일과 비밀번호를 입력하세요.",
     invalidEmail: "유효한 이메일 주소를 입력하세요.",
+    passwordLength: "비밀번호는 8자 이상 72자 이하여야 합니다.",
     invalidCredentials: "이메일 또는 비밀번호가 올바르지 않습니다.",
     cannotConnect: "서버에 연결할 수 없습니다. 연결을 확인하고 다시 시도하세요.",
     serverError: "서버 오류입니다. 나중에 다시 시도하세요.",

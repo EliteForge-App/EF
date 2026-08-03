@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { LoginDto, RegisterDto } from '@ef/contracts';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { LoginDto, RegisterDto, ValidateTokenDto } from '@ef/contracts';
 import { AuthProxyService } from './auth-proxy.service';
 import { CurrentUser } from './decorators';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -8,19 +17,26 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 export class AuthProxyController {
   constructor(private readonly authProxy: AuthProxyService) {}
 
+  /** Login: límite estricto anti brute-force. */
+  @Throttle({ default: { limit: 8, ttl: 60_000 } })
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {
     return this.authProxy.login(dto);
   }
 
+  /** Registro: evita spam de cuentas. */
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authProxy.register(dto);
   }
 
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Post('validate')
-  validate(@Body('token') token: string) {
-    return this.authProxy.validateToken(token);
+  @HttpCode(HttpStatus.OK)
+  validate(@Body() dto: ValidateTokenDto) {
+    return this.authProxy.validateToken(dto.token);
   }
 
   @Get('me')

@@ -59,15 +59,20 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
   const handleLogin = useCallback(async () => {
     if (isLoading) return
 
-    const email = username.trim()
+    const email = username.trim().toLowerCase()
 
     if (!email || !password) {
       setErrorMessage(translate("loginScreen:emptyFields"))
       return
     }
 
-    if (!EMAIL_REGEX.test(email)) {
+    if (!EMAIL_REGEX.test(email) || email.length > 254) {
       setErrorMessage(translate("loginScreen:invalidEmail"))
+      return
+    }
+
+    if (password.length < 8 || password.length > 72) {
+      setErrorMessage(translate("loginScreen:passwordLength"))
       return
     }
 

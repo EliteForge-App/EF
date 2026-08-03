@@ -1,29 +1,39 @@
 # Elite Forge — Documentación Backend
 
-Registro técnico del backend en el monorepo `EF`. Para producto y negocio, ver [ELITE_FORGE.md](./ELITE_FORGE.md). Para el frontend móvil, ver [FRONTEND.md](./FRONTEND.md).
+Registro técnico del backend en el monorepo `EF`. Para el frontend móvil, ver [FRONTEND.md](./FRONTEND.md). Para el portal web, ver [FRONTEND-WEB.md](./FRONTEND-WEB.md).
 
 ---
 
-## Overview
+## Overview — arquitectura actual
 
-El backend vive en `apps/backend/` y sigue una arquitectura de **microservicios NestJS** expuestos al exterior únicamente a través del **API Gateway**.
+El backend vive en `apps/backend/` y se organiza en microservicios NestJS. El único punto HTTP público es el **API Gateway**.
 
 ```
-Cliente (mobile / web)
+Cliente (web / mobile)
         │
         ▼
   API Gateway (:3000/api)     ← único punto HTTP público
         │ TCP
-        ├── auth-service (:3001)
-        └── users-service (:3002)
+        ├── auth-service (:3001)   → autenticación (JWT, bcrypt)
+        └── users-service (:3002)  → perfiles y preferencias
                 │
         ┌───────┴───────┐
         ▼               ▼
    PostgreSQL        MongoDB
-   (relacional)    (documentos)
+   (Prisma)     (user_preferences)
 ```
 
+| Pieza | Rol |
+|-------|-----|
+| **api-gateway** | Entrada HTTP REST (`/api/*`), validación de DTOs, JWT, proxy TCP |
+| **auth-service** | Registro, login, emisión/validación de JWT, creación de User + Profile |
+| **users-service** | Lectura/actualización de perfil (PostgreSQL) y preferencias (MongoDB) |
+| **PostgreSQL + Prisma** | Datos relacionales (`roles`, `users`, `profiles`) |
+| **MongoDB** | Colección `user_preferences` |
+
 **Importante:** el frontend **nunca** debe llamar directamente a `auth-service` ni `users-service`. Siempre consume el API Gateway en `/api/*`.
+
+El dominio activo del jugador en backend es **auth + users**. No documentamos aquí canchas/reservas como parte de ese camino.
 
 ---
 
@@ -32,236 +42,212 @@ Cliente (mobile / web)
 | Capa | Tecnología |
 |------|------------|
 | Framework | NestJS 11 |
-| Comunicación interna | TCP (MessagePattern) |
-| SQL | PostgreSQL 16 + TypeORM |
+| Comunicación interna | TCP (`MessagePattern`) |
+| SQL | PostgreSQL 16 + **Prisma** |
 | Documentos | MongoDB 7 + Mongoose |
-| Auth | JWT (bcrypt + @nestjs/jwt) |
-| Contenedores | Docker Compose |
+| Auth | JWT (`bcrypt` + `@nestjs/jwt` + Passport en gateway) |
 | Contratos compartidos | `libs/contracts` |
+| Contenedores | Docker Compose (modo híbrido recomendado) |
 
 ---
 
-## Servicios
+## Flujo de autenticación
 
-| Servicio | Puerto TCP | Puerto HTTP | Responsabilidad |
-|----------|------------|-------------|-----------------|
-| api-gateway | — | 3000 | Proxy REST → microservicios |
-| auth-service | 3001 | — | Registro, login, validación JWT |
-| users-service | 3002 | — | Perfiles y preferencias |
+### Registro
+
+```
+Web (/auth/sign-up)
+  → api-gateway  POST /api/auth/register
+    → auth-service (TCP)
+      → Prisma
+        → PostgreSQL
+```
+
+Al registrarse correctamente el sistema:
+
+- crea un **User** en PostgreSQL;
+- crea un **Profile** asociado (`userId` 1:1);
+- asigna el rol **Jugador** por defecto (no se acepta `role` en el body);
+- guarda la contraseña con **bcrypt**;
+- **normaliza el email** (trim + minúsculas).
+
+Respuesta típica: `{ accessToken, user: { id, email, name, role } }` (HTTP **201**).
+
+La app móvil no registra en nativo: el enlace “Crear cuenta” abre el registro web (`SIGN_UP_URL` → `apps/web` `/auth/sign-up`).
+
+### Login
+
+```
+Web o Mobile
+  → api-gateway  POST /api/auth/login
+    → auth-service
+      → verifica credenciales → emite JWT
+```
+
+- Login correcto → HTTP **200** + `accessToken` y datos de usuario.
+- Credenciales inválidas → HTTP **401** (`Invalid credentials`).
+- `GET /api/auth/me` (Bearer JWT) → datos del usuario autenticado desde base de datos.
+- `POST /api/auth/validate` → comprueba el token; si es válido y el usuario está activo, responde `{ valid, userId, email }`.
 
 ---
 
-## Base de datos — PostgreSQL
+## User y Profile
 
-**Conexión local (Docker):**
+### User (información de cuenta / privada)
+
+Modelo Prisma `User` (`users`):
+
+| Campo | Uso |
+|-------|-----|
+| `email` | Identificador de acceso (único, normalizado) |
+| `passwordHash` | Hash bcrypt (nunca se expone en respuestas) |
+| `role` | Relación a `Role` (p. ej. Jugador, Viewer, Empresario, Administrador) |
+| `estado` | Activo/inactivo; usuarios inactivos no pueden autenticarse |
+| `firstname` / `lastname` | Nombre de cuenta usado en respuestas auth |
+
+### Profile (datos del jugador en plataforma)
+
+Modelo Prisma `Profile` (`profiles`), relación 1:1 con User:
+
+| Campo | Uso |
+|-------|-----|
+| `alias` | Identificador único de perfil (generado en el registro) |
+| `birthDate` | Opcional |
+| `height` | Opcional |
+| `weight` | Opcional |
+
+**Profile no es un perfil público de red social.** Representa datos de cuenta/jugador ligados al User, no publicaciones, feed ni grafo social.
+
+### Preferencias (MongoDB)
+
+Colección `user_preferences` (users-service): `userId`, `theme`, `language`, `notifications`, `metadata`.
+
+---
+
+## Endpoints disponibles
+
+Prefijo global: `/api`.
+
+### Health
+
+| Método | Ruta | Auth |
+|--------|------|------|
+| GET | `/api/health` | No |
+
+### Auth → auth-service
+
+| Método | Ruta | Auth | Notas |
+|--------|------|------|--------|
+| POST | `/api/auth/register` | No | Crea User + Profile; rol Jugador |
+| POST | `/api/auth/login` | No | Devuelve JWT |
+| GET | `/api/auth/me` | **JWT** | Usuario autenticado |
+| POST | `/api/auth/validate` | No (body `token`) | Valida JWT + usuario activo |
+
+Códigos relevantes: **400** validación, **401** credenciales, **409** email duplicado.
+
+### Users → users-service
+
+| Método | Ruta | Auth |
+|--------|------|------|
+| GET | `/api/users/:id` | **JWT** |
+| PATCH | `/api/users/:id/profile` | **JWT** |
+| GET | `/api/users/:id/preferences` | **JWT** |
+| PATCH | `/api/users/:id/preferences` | **JWT** |
+
+#### Permisos (claim `role` del JWT)
+
+| Quién | Qué puede hacer |
+|-------|-----------------|
+| Propietario (`sub` === `:id`) | Consultar y modificar su perfil y preferencias |
+| **Administrador** | Consultar y modificar perfil/preferencias de cualquier usuario (mismos endpoints) |
+| **Jugador** / **Empresario** / **Viewer** sobre `:id` ajeno | **403** |
+| Sin token | **401** |
+
+No hay endpoints administrativos adicionales: se reutilizan las rutas existentes.
+
+---
+
+## Base de datos
+
+### PostgreSQL (Docker local)
 
 | Parámetro | Valor |
 |-----------|-------|
 | Host | `localhost` |
-| Puerto host | `5433` (mapeado desde 5432 del contenedor) |
-| Usuario | `ef_user` |
-| Contraseña | `ef_password` |
-| Base de datos | `ef_db` |
+| Puerto host | `5433` → 5432 contenedor |
+| Usuario / DB | `ef_user` / `ef_db` |
+| ORM | Prisma (`apps/backend/prisma/schema.prisma`) |
 
-### Tablas actuales
+Migraciones en `apps/backend/prisma/migrations/`. Seed de roles: `npm run prisma:seed` desde `apps/backend`.
 
-#### `users` (auth-service)
+### MongoDB (Docker local)
 
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| `id` | uuid | PK, auto-generado |
-| `email` | varchar | único |
-| `passwordHash` | varchar | bcrypt |
-| `name` | varchar | |
-| `createdAt` | timestamp | |
-| `updatedAt` | timestamp | |
-
-Entidad: `apps/backend/apps/auth-service/src/auth/entities/user.entity.ts`
-
-#### `user_profiles` (users-service)
-
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| `id` | uuid | PK (= user id) |
-| `email` | varchar | único |
-| `name` | varchar | |
-| `createdAt` | timestamp | |
-| `updatedAt` | timestamp | |
-
-Entidad: `apps/backend/apps/users-service/src/users/entities/user-profile.entity.ts`
-
-### Sincronización en desarrollo
-
-`PostgresDatabaseModule` usa `synchronize: true` cuando `NODE_ENV !== 'production'`. Las tablas se crean/actualizan al arrancar el servicio. **En producción se deben usar migraciones.**
+| Parámetro | Valor |
+|-----------|-------|
+| URI típica (host) | `mongodb://…@localhost:27018/ef_mongo?authSource=admin` |
+| Colección | `user_preferences` |
 
 ---
 
-## Base de datos — MongoDB
+## Desarrollo local (modo híbrido)
 
-**Conexión local (Docker):**
+Recomendado: PostgreSQL + MongoDB en Docker; **api-gateway**, **auth-service** y **users-service** en local.
 
-```
-mongodb://ef_user:ef_password@localhost:27017/ef_mongo?authSource=admin
-```
-
-### Colecciones actuales
-
-#### `user_preferences` (users-service)
-
-| Campo | Tipo | Notas |
-|-------|------|-------|
-| `userId` | string | único |
-| `theme` | `light` \| `dark` | default `light` |
-| `language` | string | default `es` |
-| `notifications` | boolean | default `true` |
-| `metadata` | object | libre |
-
-Schema: `apps/backend/apps/users-service/src/users/schemas/user-preferences.schema.ts`
-
----
-
-## API Gateway — Endpoints
-
-Prefijo global: `/api`
-
-### Health
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/api/health` | Estado del gateway |
-
-### Auth (proxy → auth-service)
-
-#### Registro de usuarios — portal web externo
-
-La **creación de cuentas** se realiza en el portal web de Hostinger, no desde la app móvil:
-
-| Canal | URL / endpoint | Uso |
-|-------|----------------|-----|
-| **Web (principal)** | http://localhost:5173/auth/sign-up (`apps/web`) | Registro de nuevos usuarios (NestJS/Prisma) |
-| App móvil | Enlace "Crear cuenta" en Login → abre la URL anterior en el navegador | Sin formulario nativo de registro |
-| API Gateway | `POST /api/auth/register` | Disponible para integraciones; la app móvil no lo consume directamente |
-
-Tras registrarse en la web, el usuario inicia sesión en la app con `POST /api/auth/login` (misma tabla `users` en PostgreSQL si el portal web persiste ahí).
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| POST | `/api/auth/register` | `{ email, password, name }` | `{ accessToken, user }` |
-| POST | `/api/auth/login` | `{ email, password }` | `{ accessToken, user }` |
-| POST | `/api/auth/validate` | `{ token }` | `{ valid, userId?, email? }` |
-
-**Respuesta exitosa de login/register:**
-
-```json
-{
-  "accessToken": "<JWT>",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "Nombre"
-  }
-}
-```
-
-**Error 401 (credenciales inválidas):**
-
-```json
-{
-  "statusCode": 401,
-  "message": "Invalid credentials",
-  "timestamp": "...",
-  "path": "/api/auth/login"
-}
-```
-
-### Users (proxy → users-service)
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/api/users/:id` | Obtener perfil |
-| PATCH | `/api/users/:id/profile` | Actualizar perfil |
-| GET | `/api/users/:id/preferences` | Preferencias (MongoDB) |
-| PATCH | `/api/users/:id/preferences` | Actualizar preferencias |
-
----
-
-## Arquitectura interna (microservicios)
-
-Los microservicios no exponen HTTP. Se comunican por **TCP** con `MessagePattern`:
-
-```typescript
-// auth-service
-@MessagePattern('auth.login')
-login(@Payload() dto: LoginDto) { ... }
-```
-
-El API Gateway inyecta un cliente TCP y reenvía las peticiones HTTP:
+Detalle de arranque, puertos y `EADDRINUSE`: [README del monorepo](../README.md#3-backend--desarrollo-local-modo-hibrido).
 
 ```
-POST /api/auth/login  →  AuthProxyService  →  TCP  →  auth-service
+API Gateway (local)     :3000  HTTP  /api/*
+  ├── auth-service      :3001  TCP
+  └── users-service     :3002  TCP
+        ├── PostgreSQL  :5433 (Docker)
+        └── MongoDB     :27018 (Docker)
 ```
 
----
-
-## Docker
+Desde `apps/backend`:
 
 ```bash
-npm run docker:build   # Construir imágenes
-npm run docker:up      # Levantar stack completo (modo full Docker)
-npm run docker:down    # Detener stack
+npm run start:auth
+npm run start:users
+npm run start:gateway
 ```
 
-Archivos: `infrastructure/docker/`
-
-| Contenedor | Imagen | Puerto host |
-|------------|--------|-------------|
-| ef-api-gateway | docker-api-gateway | 3000 |
-| ef-auth-service | docker-auth-service | (interno) |
-| ef-users-service | docker-users-service | (interno) |
-| ef-postgres | postgres:16-alpine | 5433 |
-| ef-mongodb | mongo:7 | 27018 |
-
-### Desarrollo híbrido vs full Docker
-
-- **Híbrido:** `docker compose ... up postgres mongodb -d` + microservicios con `npm run start:*` en local. Ver [README — desarrollo local](../README.md#3-backend--desarrollo-local-modo-hibrido).
-- **Full Docker:** `npm run docker:up` — no arranques gateway/auth/users en local a la vez.
+API: `http://localhost:3000/api`
 
 ---
 
-## Variables de entorno
+## Estado de verificación
 
-Ver `.env.example` en la raíz del monorepo.
+Validado en el entorno de desarrollo (modo híbrido):
+
+- [x] PostgreSQL en marcha y accesible
+- [x] Prisma conectado al esquema migrado
+- [x] Register crea **User** + **Profile** (rol Jugador, email normalizado, bcrypt)
+- [x] Login emite JWT; `/auth/me` y `/auth/validate` operativos
+- [x] Errores **400**, **401** y **409** en auth
+- [x] api-gateway ↔ auth-service ↔ users-service por TCP
+- [x] Users con JWT, ownership y acceso de Administrador según la política anterior
+
+---
+
+## Próximos pasos
+
+Pendientes (no implementados aún):
+
+- Conectar el frontend móvil con las rutas de perfil/preferencias.
+- Evolucionar **Profile** solo cuando existan necesidades reales de producto (campos ya modelados en Prisma).
+- Funcionalidades deportivas o sociales futuras cuando tengan sus propios contratos y servicios.
 
 ---
 
 ## Registro de cambios
 
-### 2026-07-04 — Registro de usuarios vía portal web
+### 2026-07-31 — Auth, users y documentación alineados al runtime
 
-- La app móvil deja de navegar a un formulario nativo al pulsar "Crear cuenta".
-- El enlace abre `Config.SIGN_UP_URL` → `apps/web` `/auth/sign-up` (NestJS/Prisma).
-- En desarrollo: `http://<host>:5173/auth/sign-up`.
-- **Sin cambios de lógica backend**; `POST /api/auth/register` sigue disponible en el API Gateway.
+- Auth con Prisma: registro crea User + Profile; login JWT; `/auth/me` y `/auth/validate`.
+- Users protegido con JWT; propietario o Administrador.
+- Documentación actualizada (Prisma, endpoints reales, sin TypeORM/Hostinger como camino activo).
 
-### 2026-07-04 — Integración mobile ↔ auth (sin cambios de código backend)
+### 2026-07-04 — Registro vía portal web / Docker monorepo
 
-- El frontend móvil se conectó al endpoint existente `POST /api/auth/login` vía API Gateway.
-- No se modificó código backend en esta integración.
-- Tabla `users` en PostgreSQL ya existía y soporta register/login.
-- Documento `BACKEND.md` creado como referencia del estado actual.
-
-### 2026-07-04 — Dockerfiles monorepo
-
-- Contexto de build movido a la raíz del monorepo para `npm ci` con `package-lock.json`.
-- Multi-stage build para api-gateway, auth-service, users-service.
-- Puerto Postgres en host cambiado a `5433` (conflicto con Postgres local en 5432).
-- Fix import en `user.repository.ts` (`../entities/user.entity`).
-
----
-
-## Próximos pasos sugeridos
-
-- [ ] Crear perfil en `user_profiles` al registrar usuario (sincronizar auth ↔ users).
-- [ ] Migraciones TypeORM para producción.
-- [ ] Ampliar entidad `users` si se requieren campos adicionales de auth.
-- [ ] Refresh tokens / revocación de sesiones.
+- Registro de jugadores desde `apps/web`; móvil abre `SIGN_UP_URL`.
+- Dockerfiles y puertos Postgres host `5433`.
