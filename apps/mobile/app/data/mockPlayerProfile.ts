@@ -190,9 +190,7 @@ export function isTestLockedThisMonth(lastCompletedAt?: string): boolean {
   if (!lastCompletedAt) return false
   const completed = new Date(lastCompletedAt)
   const now = new Date()
-  return (
-    completed.getFullYear() === now.getFullYear() && completed.getMonth() === now.getMonth()
-  )
+  return completed.getFullYear() === now.getFullYear() && completed.getMonth() === now.getMonth()
 }
 
 export function getTestAvailability(state: PhysicalTestState): "available" | "completed" {

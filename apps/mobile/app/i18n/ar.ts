@@ -286,14 +286,11 @@ const ar: Translations = {
     psychCategoryOnField: "ON-FIELD",
     psychQ1:
       "When our center-back plays out under high press, I offer short between the lines even if it costs depth.",
-    psychQ2:
-      "After a teammate's costly mistake, I avoid passing to them until the game settles.",
-    psychQ3:
-      "On attacking set pieces, I call marks, second balls, and who covers the counter.",
+    psychQ2: "After a teammate's costly mistake, I avoid passing to them until the game settles.",
+    psychQ3: "On attacking set pieces, I call marks, second balls, and who covers the counter.",
     psychQ4:
       "If my full-back is exposed because of my run, I drop to cover even when winning my duel.",
-    psychQ5:
-      "When captain or coach instruction clashes with what I see, I follow the instruction.",
+    psychQ5: "When captain or coach instruction clashes with what I see, I follow the instruction.",
     psychQ6:
       "On a clear counter, I shoot even when a teammate looks better placed with few touches.",
     psychQ7:

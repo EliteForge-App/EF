@@ -131,13 +131,15 @@ const en = {
     testLockedTitle: "Test locked",
     testLockedMessage: "You already completed this test this month. You can retake it on {{date}}.",
     testLockedThisMonth: "This test was already recorded this month.",
-    monthlyLockHint: "Professional protocol. Once confirmed, the result is fixed until next calendar month.",
+    monthlyLockHint:
+      "Professional protocol. Once confirmed, the result is fixed until next calendar month.",
     protocolTitle: "PROTOCOL",
     sessionStepProtocol: "Step 1 · Protocol",
     sessionStepMeasure: "Step 2 · Measurement",
     sessionStepConfirm: "Step 3 · Confirm",
     sessionContinue: "Continue",
-    confirmLockWarning: "Once confirmed, the result locks for this month and updates your radar. You cannot edit it.",
+    confirmLockWarning:
+      "Once confirmed, the result locks for this month and updates your radar. You cannot edit it.",
     currentMonthResult: "Current month result",
     resultRaw: "Measurement",
     resultScore: "Score",
@@ -161,22 +163,28 @@ const en = {
     stat_dribbling: "Dribbling",
     testAttackShots: "10 shots from 16 m",
     testAttackShotsDesc: "Measures finishing accuracy and composure under pressure.",
-    testAttackShotsProtocol: "Place the ball on the 16 m mark. Take 10 consecutive shots. Record goals scored. 5 min warm-up required.",
+    testAttackShotsProtocol:
+      "Place the ball on the 16 m mark. Take 10 consecutive shots. Record goals scored. 5 min warm-up required.",
     testDefenseControl: "Defense: control & recovery",
     testDefenseControlDesc: "Measures defensive reading, interceptions and ball recovery.",
-    testDefenseControlProtocol: "3 min circuit: 1v1 pressure, pass blocking and zone recovery. Evaluator scores 0-100 using adapted FIFA/UEFA criteria.",
+    testDefenseControlProtocol:
+      "3 min circuit: 1v1 pressure, pass blocking and zone recovery. Evaluator scores 0-100 using adapted FIFA/UEFA criteria.",
     testBeep: "Beep test (Yo-Yo / PACER)",
     testBeepDesc: "Aerobic capacity and intermittent endurance.",
-    testBeepProtocol: "Run the beep test on a 20 m course following official audio. Record the last level completed (e.g. 8.5).",
+    testBeepProtocol:
+      "Run the beep test on a 20 m course following official audio. Record the last level completed (e.g. 8.5).",
     testSprint: "30 m sprint",
     testSprintDesc: "Linear speed over a short distance.",
-    testSprintProtocol: "30 m sprint from a standing start. Use timing gates or manual stopwatch. Best of 2 attempts with 3 min recovery.",
+    testSprintProtocol:
+      "30 m sprint from a standing start. Use timing gates or manual stopwatch. Best of 2 attempts with 3 min recovery.",
     testLoughborough: "Passing accuracy (Loughborough)",
     testLoughboroughDesc: "Passing precision and consistency to targets.",
-    testLoughboroughProtocol: "Loughborough Soccer Passing Test: passes from 16 m to targets. Record hits out of total (16 standard passes).",
+    testLoughboroughProtocol:
+      "Loughborough Soccer Passing Test: passes from 16 m to targets. Record hits out of total (16 standard passes).",
     testIllinois: "Illinois agility",
     testIllinoisDesc: "Direction changes, dribbling and body control.",
-    testIllinoisProtocol: "Complete the Illinois course (10×5 m) per standard. Time the best of 2 attempts with 4 min rest between.",
+    testIllinoisProtocol:
+      "Complete the Illinois course (10×5 m) per standard. Time the best of 2 attempts with 4 min rest between.",
     inputGoals: "Goals scored (0-10)",
     inputGoalsHint: "E.g. 7 goals from 10 shots",
     inputDefenseScore: "Evaluator score (0-100)",
@@ -253,7 +261,8 @@ const en = {
       "Your favorite position is {{favorite}}. Based on tests, we also suggest {{suggested}}.",
     favoritePositionBadge: "Favorite",
     favoritePositionTitle: "Favorite position",
-    favoritePositionHint: "Optional. Overrides the badge in your profile. Suggestions remain as reference.",
+    favoritePositionHint:
+      "Optional. Overrides the badge in your profile. Suggestions remain as reference.",
     favoritePositionClear: "Clear favorite position",
     editProfileTitle: "Edit profile",
     editDisplayName: "Full name",
@@ -276,7 +285,8 @@ const en = {
     personalInfoTitle: "About me",
     personalAge: "Age: {{age}}",
     psychSectionTitle: "Psychological assessment",
-    psychSectionSubtitle: "Match scenarios about collective play and on-field decisions. One attempt per month.",
+    psychSectionSubtitle:
+      "Match scenarios about collective play and on-field decisions. One attempt per month.",
     psychTestTitle: "Mindset & teamwork test",
     psychTestDesc:
       "10 situational scenarios from real match hierarchy (build-up, pressing, transitions). There are no perfect answers — respond with what you would actually do on the pitch (1–5).",

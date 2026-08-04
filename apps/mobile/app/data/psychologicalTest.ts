@@ -1,11 +1,7 @@
 export type PsychQuestionCategory = "teamwork" | "onField"
 
 export type PsychTraitKey =
-  | "organizer"
-  | "directness"
-  | "discipline"
-  | "creativity"
-  | "competitiveness"
+  "organizer" | "directness" | "discipline" | "creativity" | "competitiveness"
 
 export const PSYCH_TRAIT_KEYS: PsychTraitKey[] = [
   "organizer",
@@ -132,10 +128,7 @@ export function computePsychTraits(answers: number[]): Record<PsychTraitKey, num
     const answer = answers[index] ?? 0
     if (answer <= 0) return
 
-    for (const [trait, weight] of Object.entries(question.traits) as [
-      PsychTraitKey,
-      number,
-    ][]) {
+    for (const [trait, weight] of Object.entries(question.traits) as [PsychTraitKey, number][]) {
       const reverse = weight < 0
       const contribution = normalizeAnswer(answer, reverse) * Math.abs(weight)
       sums[trait] += contribution
@@ -175,9 +168,7 @@ export function isPsychTestLockedThisMonth(completedAt?: string): boolean {
   if (!completedAt) return false
   const completed = new Date(completedAt)
   const now = new Date()
-  return (
-    completed.getFullYear() === now.getFullYear() && completed.getMonth() === now.getMonth()
-  )
+  return completed.getFullYear() === now.getFullYear() && completed.getMonth() === now.getMonth()
 }
 
 export function isPsychAnswersCompatible(answers?: number[]): boolean {

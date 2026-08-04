@@ -7,13 +7,7 @@ import {
 import type { PsychTraitKey } from "@/data/psychologicalTest"
 
 export type PlayerPositionId =
-  | "striker"
-  | "winger"
-  | "cam"
-  | "cm"
-  | "cdm"
-  | "fullback"
-  | "centerback"
+  "striker" | "winger" | "cam" | "cm" | "cdm" | "fullback" | "centerback"
 
 export const ALL_PLAYER_POSITIONS: PlayerPositionId[] = [
   "striker",
