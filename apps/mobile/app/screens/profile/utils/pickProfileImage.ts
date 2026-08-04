@@ -1,0 +1,95 @@
+import { Alert } from "react-native"
+import { Directory, File, Paths } from "expo-file-system"
+import * as ImagePicker from "expo-image-picker"
+
+import { translate } from "@/i18n/translate"
+
+function sanitizeUserKey(userKey: string): string {
+  return userKey.replace(/[^a-zA-Z0-9._-]/g, "_")
+}
+
+function getExtension(uri: string): "jpg" | "png" | "webp" {
+  const normalized = uri.split("?")[0]?.toLowerCase() ?? ""
+  if (normalized.endsWith(".png")) return "png"
+  if (normalized.endsWith(".webp")) return "webp"
+  return "jpg"
+}
+
+function getAvatarDirectory(): Directory {
+  const directory = new Directory(Paths.document, "profile-avatars")
+  if (!directory.exists) {
+    directory.create({ intermediates: true, idempotent: true })
+  }
+  return directory
+}
+
+export function isPersistedAvatarUri(uri: string | null | undefined): boolean {
+  if (!uri) return false
+  const avatarDirectory = new Directory(Paths.document, "profile-avatars")
+  return uri.startsWith(avatarDirectory.uri)
+}
+
+export async function deleteStoredAvatar(uri: string | null | undefined): Promise<void> {
+  if (!isPersistedAvatarUri(uri) || !uri) return
+
+  try {
+    const file = new File(uri)
+    if (file.exists) file.delete()
+  } catch {
+    // Ignore cleanup failures for missing or locked files.
+  }
+}
+
+function persistAvatarImage(sourceUri: string, userKey: string): string {
+  const avatarDirectory = getAvatarDirectory()
+  const extension = getExtension(sourceUri)
+  const destination = new File(avatarDirectory, `${sanitizeUserKey(userKey)}.${extension}`)
+
+  if (destination.exists) {
+    destination.delete()
+  }
+
+  const source = new File(sourceUri)
+  source.copy(destination)
+
+  return destination.uri
+}
+
+export async function pickProfileImageFromGallery(
+  userKey: string,
+  previousUri?: string | null,
+): Promise<string | null> {
+  try {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!permission.granted) {
+      Alert.alert(
+        translate("profileScreen:avatarPermissionTitle"),
+        translate("profileScreen:avatarPermissionMessage"),
+      )
+      return null
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.85,
+    })
+
+    if (result.canceled || !result.assets[0]?.uri) return null
+
+    const persistedUri = persistAvatarImage(result.assets[0].uri, userKey)
+
+    if (previousUri && previousUri !== persistedUri) {
+      await deleteStoredAvatar(previousUri)
+    }
+
+    return persistedUri
+  } catch {
+    Alert.alert(
+      translate("profileScreen:avatarNativeMissingTitle"),
+      translate("profileScreen:avatarNativeMissingMessage"),
+    )
+    return null
+  }
+}

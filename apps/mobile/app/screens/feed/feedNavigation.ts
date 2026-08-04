@@ -13,8 +13,3 @@ export function showFeedComingSoon(destination: FeedDestination) {
     translate(`feedDrawer:${destination}Soon` as never),
   )
 }
-
-/** Destino Perfil — vista pendiente de implementación. */
-export function openProfile() {
-  showFeedComingSoon("profile")
-}
