@@ -148,9 +148,7 @@ export function FeedDrawer({ onClose, onItemPress, onLogout }: FeedDrawerProps) 
               key={item.id}
               icon={item.icon}
               label={translate(item.labelKey as never)}
-              subtitle={
-                item.id === "profile" ? translate("profileScreen:title") : undefined
-              }
+              subtitle={item.id === "profile" ? translate("profileScreen:title") : undefined}
               onPress={() => onItemPress(item.id)}
             />
           ))}

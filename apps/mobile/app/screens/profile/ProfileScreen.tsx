@@ -20,10 +20,7 @@ import { PositionSuggestionCard } from "./components/PositionSuggestionCard"
 import { PhysicalTestCard } from "./components/PhysicalTestCard"
 import { ProfileHeader, getPositionLabel } from "./components/ProfileHeader"
 import { ProfilePersonalCard } from "./components/ProfilePersonalCard"
-import {
-  ProfileQuickLinkCard,
-  type ProfileQuickLinkId,
-} from "./components/ProfileQuickLinkCard"
+import { ProfileQuickLinkCard, type ProfileQuickLinkId } from "./components/ProfileQuickLinkCard"
 import { PsychTestCard } from "./components/PsychTestCard"
 import { StatsRadarChart } from "./components/StatsRadarChart"
 import { usePlayerProfile } from "./usePlayerProfile"
@@ -46,8 +43,13 @@ export function ProfileScreen({ navigation }: AppStackScreenProps<"Profile">) {
   const { authEmail } = useAuth()
   const userKey = authEmail ?? "guest"
   const { horizontalPadding, insets, contentMaxWidth } = useResponsiveLayout()
-  const { profile, psychTest, reload: reloadProfile, resetPsychTest, updateProfile } =
-    usePlayerProfile(userKey, authEmail)
+  const {
+    profile,
+    psychTest,
+    reload: reloadProfile,
+    resetPsychTest,
+    updateProfile,
+  } = usePlayerProfile(userKey, authEmail)
   const { tests, radarData, definitions, reload, resetAllTests, positionSuggestion } =
     useProfileStats(userKey, psychTest?.answers)
 

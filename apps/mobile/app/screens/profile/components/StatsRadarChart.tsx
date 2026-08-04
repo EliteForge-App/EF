@@ -34,11 +34,7 @@ function polarPoint(
   }
 }
 
-function buildPolygonPoints(
-  center: number,
-  radius: number,
-  data: RadarAxis[],
-): string {
+function buildPolygonPoints(center: number, radius: number, data: RadarAxis[]): string {
   return data
     .map((item, index) => {
       const point = polarPoint(center, radius, index, data.length, item.value / 100)
@@ -61,7 +57,13 @@ export function StatsRadarChart({ data, size = 280, onStatPress }: StatsRadarCha
 
   return (
     <YStack alignItems="center" gap={16}>
-      <YStack width={size} height={size} position="relative" alignItems="center" justifyContent="center">
+      <YStack
+        width={size}
+        height={size}
+        position="relative"
+        alignItems="center"
+        justifyContent="center"
+      >
         <Svg width={size} height={size}>
           {[0.25, 0.5, 0.75, 1].map((level) => (
             <Circle
@@ -107,14 +109,7 @@ export function StatsRadarChart({ data, size = 280, onStatPress }: StatsRadarCha
 
             return (
               <Fragment key={item.label}>
-                {hasValue && (
-                  <Circle
-                    cx={valuePoint.x}
-                    cy={valuePoint.y}
-                    r={5}
-                    fill={dotColor}
-                  />
-                )}
+                {hasValue && <Circle cx={valuePoint.x} cy={valuePoint.y} r={5} fill={dotColor} />}
                 <SvgText
                   x={labelPoint.x}
                   y={labelPoint.y}

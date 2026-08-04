@@ -58,11 +58,14 @@ export function PhysicalTestSessionScreen({
 
   const previewScore = measuredResult ? scoreTestResult(measuredResult) : null
 
-  const handleMeasurementChange = useCallback((result: TestRawResult | null, isComplete: boolean) => {
-    setMeasuredResult(result)
-    setMeasurementComplete(isComplete)
-    setValidationError("")
-  }, [])
+  const handleMeasurementChange = useCallback(
+    (result: TestRawResult | null, isComplete: boolean) => {
+      setMeasuredResult(result)
+      setMeasurementComplete(isComplete)
+      setValidationError("")
+    },
+    [],
+  )
 
   const validateAndAdvance = useCallback(() => {
     setValidationError("")
@@ -197,11 +200,7 @@ export function PhysicalTestSessionScreen({
                 alignItems="center"
                 justifyContent="center"
               >
-                <Ionicons
-                  name={TEST_ICONS[testId]}
-                  size={24}
-                  color={eliteForgeColors.emerald}
-                />
+                <Ionicons name={TEST_ICONS[testId]} size={24} color={eliteForgeColors.emerald} />
               </XStack>
               <YStack flex={1} gap={4}>
                 <Text color={eliteForgeColors.white} fontWeight="800" fontSize={18}>
@@ -355,7 +354,9 @@ export function PhysicalTestSessionScreen({
                 >
                   {isLocked && step === "protocol"
                     ? translate("profileScreen:testRetakeOn", {
-                        date: formatRetakeDate(getNextRetakeDate(state?.lastCompletedAt) ?? new Date()),
+                        date: formatRetakeDate(
+                          getNextRetakeDate(state?.lastCompletedAt) ?? new Date(),
+                        ),
                       })
                     : step === "confirm"
                       ? translate("profileScreen:testConfirmAction")

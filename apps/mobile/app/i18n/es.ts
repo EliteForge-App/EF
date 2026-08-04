@@ -134,13 +134,15 @@ const es: Translations = {
     testLockedTitle: "Test bloqueado",
     testLockedMessage: "Ya completaste este test este mes. Podrás repetirlo el {{date}}.",
     testLockedThisMonth: "Este test ya fue registrado este mes.",
-    monthlyLockHint: "Protocolo profesional. Una vez confirmado, el resultado queda fijo hasta el próximo mes calendario.",
+    monthlyLockHint:
+      "Protocolo profesional. Una vez confirmado, el resultado queda fijo hasta el próximo mes calendario.",
     protocolTitle: "PROTOCOLO",
     sessionStepProtocol: "Paso 1 · Protocolo",
     sessionStepMeasure: "Paso 2 · Medición",
     sessionStepConfirm: "Paso 3 · Confirmar",
     sessionContinue: "Continuar",
-    confirmLockWarning: "Al confirmar, el resultado queda bloqueado este mes y actualiza tu radar. No podrás editarlo.",
+    confirmLockWarning:
+      "Al confirmar, el resultado queda bloqueado este mes y actualiza tu radar. No podrás editarlo.",
     currentMonthResult: "Resultado del mes actual",
     resultRaw: "Medición",
     resultScore: "Puntuación",
@@ -164,22 +166,28 @@ const es: Translations = {
     stat_dribbling: "Regate",
     testAttackShots: "10 tiros desde 16 m",
     testAttackShotsDesc: "Evalúa precisión ofensiva y definición bajo presión.",
-    testAttackShotsProtocol: "Coloca el balón en marca a 16 m. Ejecuta 10 tiros consecutivos (1ª o 2ª serie). Registra goles anotados. Calentamiento de 5 min obligatorio.",
+    testAttackShotsProtocol:
+      "Coloca el balón en marca a 16 m. Ejecuta 10 tiros consecutivos (1ª o 2ª serie). Registra goles anotados. Calentamiento de 5 min obligatorio.",
     testDefenseControl: "Defensa: control y recuperación",
     testDefenseControlDesc: "Mide lectura defensiva, interceptación y recuperación del balón.",
-    testDefenseControlProtocol: "Circuito de 3 min: presión 1v1, bloqueo de pase y recuperación en zona. Evaluador anota de 0-100 según criterios FIFA/UEFA adaptados.",
+    testDefenseControlProtocol:
+      "Circuito de 3 min: presión 1v1, bloqueo de pase y recuperación en zona. Evaluador anota de 0-100 según criterios FIFA/UEFA adaptados.",
     testBeep: "Test de Beep (Yo-Yo / PACER)",
     testBeepDesc: "Capacidad aeróbica y resistencia intermitente.",
-    testBeepProtocol: "Ejecuta el test de beep en pista de 20 m. Corre hasta agotamiento siguiendo el audio oficial. Registra el último nivel completado (ej. 8.5).",
+    testBeepProtocol:
+      "Ejecuta el test de beep en pista de 20 m. Corre hasta agotamiento siguiendo el audio oficial. Registra el último nivel completado (ej. 8.5).",
     testSprint: "Sprint 30 m",
     testSprintDesc: "Velocidad lineal en distancia corta.",
-    testSprintProtocol: "Sprint de 30 m desde salida de pie. Usa fotocélulas o cronómetro manual. Mejor de 2 intentos con 3 min de recuperación.",
+    testSprintProtocol:
+      "Sprint de 30 m desde salida de pie. Usa fotocélulas o cronómetro manual. Mejor de 2 intentos con 3 min de recuperación.",
     testLoughborough: "Precisión de pase (Loughborough)",
     testLoughboroughDesc: "Precisión y consistencia en pases a objetivo.",
-    testLoughboroughProtocol: "Protocolo Loughborough Soccer Passing Test: pases desde 16 m a objetivos en arco. Registra aciertos sobre total (16 pases estándar).",
+    testLoughboroughProtocol:
+      "Protocolo Loughborough Soccer Passing Test: pases desde 16 m a objetivos en arco. Registra aciertos sobre total (16 pases estándar).",
     testIllinois: "Agilidad Illinois",
     testIllinoisDesc: "Cambios de dirección, regate y control corporal.",
-    testIllinoisProtocol: "Recorre el circuito Illinois (10×5 m) según norma. Cronometra el mejor intento de 2, con 4 min de descanso entre series.",
+    testIllinoisProtocol:
+      "Recorre el circuito Illinois (10×5 m) según norma. Cronometra el mejor intento de 2, con 4 min de descanso entre series.",
     inputGoals: "Goles anotados (0-10)",
     inputGoalsHint: "Ej. 7 goles de 10 tiros",
     inputDefenseScore: "Puntuación evaluador (0-100)",
@@ -221,7 +229,8 @@ const es: Translations = {
     measureBeepLevel: "Nivel actual",
     measureShuttles: "Shuttles",
     measureCountdown: "Próximo shuttle",
-    measureBeepHint: "Corre shuttles de 20 m. Toca al llegar a la línea antes de que termine la cuenta.",
+    measureBeepHint:
+      "Corre shuttles de 20 m. Toca al llegar a la línea antes de que termine la cuenta.",
     measureDefenseTotal: "Puntuación total / 100",
     defenseCriterion1: "Presión 1v1",
     defenseCriterion2: "Interceptación de pase",
@@ -256,7 +265,8 @@ const es: Translations = {
       "Tu posición favorita es {{favorite}}. Según tests, también sugerimos {{suggested}}.",
     favoritePositionBadge: "Favorita",
     favoritePositionTitle: "Posición favorita",
-    favoritePositionHint: "Opcional. Reemplaza el badge del perfil. Las sugerencias siguen como referencia.",
+    favoritePositionHint:
+      "Opcional. Reemplaza el badge del perfil. Las sugerencias siguen como referencia.",
     favoritePositionClear: "Quitar posición favorita",
     editProfileTitle: "Editar perfil",
     editDisplayName: "Nombre completo",

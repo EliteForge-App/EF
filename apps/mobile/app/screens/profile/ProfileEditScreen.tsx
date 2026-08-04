@@ -54,7 +54,10 @@ export function ProfileEditScreen({ navigation }: AppStackScreenProps<"ProfileEd
 
   const handleSave = useCallback(() => {
     if (!form.displayName.trim()) {
-      Alert.alert(translate("profileScreen:editValidationTitle"), translate("profileScreen:editNameRequired"))
+      Alert.alert(
+        translate("profileScreen:editValidationTitle"),
+        translate("profileScreen:editNameRequired"),
+      )
       return
     }
     saveFullProfile(form)

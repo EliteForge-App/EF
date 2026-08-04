@@ -22,9 +22,7 @@ import { PsychScoresChart } from "./components/PsychScoresChart"
 
 type Step = "intro" | "questions" | "result"
 
-export function PsychologicalTestScreen({
-  navigation,
-}: AppStackScreenProps<"PsychologicalTest">) {
+export function PsychologicalTestScreen({ navigation }: AppStackScreenProps<"PsychologicalTest">) {
   const { authEmail } = useAuth()
   const userKey = authEmail ?? "guest"
   const { psychTest, savePsychTestResult } = usePlayerProfile(userKey, authEmail)
@@ -43,7 +41,9 @@ export function PsychologicalTestScreen({
 
   const handleSelectAnswer = useCallback(
     (value: number) => {
-      setAnswers((current) => current.map((item, index) => (index === questionIndex ? value : item)))
+      setAnswers((current) =>
+        current.map((item, index) => (index === questionIndex ? value : item)),
+      )
     },
     [questionIndex],
   )
@@ -216,7 +216,10 @@ export function PsychologicalTestScreen({
                   {PSYCH_LIKERT_OPTIONS.map((option) => {
                     const isSelected = answers[questionIndex] === option.value
                     return (
-                      <Pressable key={option.value} onPress={() => handleSelectAnswer(option.value)}>
+                      <Pressable
+                        key={option.value}
+                        onPress={() => handleSelectAnswer(option.value)}
+                      >
                         <XStack
                           paddingVertical={12}
                           paddingHorizontal={14}
@@ -274,9 +277,7 @@ export function PsychologicalTestScreen({
                 alignItems="center"
                 justifyContent="center"
                 backgroundColor={
-                  isLocked && step === "intro"
-                    ? "rgba(255,255,255,0.06)"
-                    : "rgba(0,206,200,0.18)"
+                  isLocked && step === "intro" ? "rgba(255,255,255,0.06)" : "rgba(0,206,200,0.18)"
                 }
                 borderWidth={1}
                 borderColor={

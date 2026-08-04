@@ -9,7 +9,10 @@ import {
   type PlayerProfileData,
 } from "@/utils/playerProfileStorage"
 
-function mergeProfile(stored: PlayerProfileData | undefined, authEmail?: string): PlayerProfileData {
+function mergeProfile(
+  stored: PlayerProfileData | undefined,
+  authEmail?: string,
+): PlayerProfileData {
   const defaults = createDefaultProfile(authEmail)
   if (!stored) return defaults
   return { ...defaults, ...stored }

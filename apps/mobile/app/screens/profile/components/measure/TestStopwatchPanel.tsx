@@ -45,9 +45,7 @@ export function TestStopwatchPanel({ onMeasured }: TestStopwatchPanelProps) {
         backgroundColor="rgba(0,0,0,0.28)"
         borderWidth={1}
         borderColor={
-          stopwatch.status === "running"
-            ? eliteForgeColors.emerald
-            : eliteForgeColors.carbonBorder
+          stopwatch.status === "running" ? eliteForgeColors.emerald : eliteForgeColors.carbonBorder
         }
         alignItems="center"
         gap={8}
@@ -59,14 +57,24 @@ export function TestStopwatchPanel({ onMeasured }: TestStopwatchPanelProps) {
               ? translate("profileScreen:measureTimerDone")
               : translate("profileScreen:measureTimerReady")}
         </Text>
-        <Text color={eliteForgeColors.white} fontWeight="800" fontSize={48} fontVariant={["tabular-nums"]}>
+        <Text
+          color={eliteForgeColors.white}
+          fontWeight="800"
+          fontSize={48}
+          fontVariant={["tabular-nums"]}
+        >
           {formatStopwatch(stopwatch.elapsedMs)}
         </Text>
       </YStack>
 
       <XStack gap={10} width="100%">
         {stopwatch.status !== "running" && stopwatch.status !== "stopped" && (
-          <Pressable style={{ flex: 1 }} onPress={handleStart} onPressIn={startMotion.onPressIn} onPressOut={startMotion.onPressOut}>
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={handleStart}
+            onPressIn={startMotion.onPressIn}
+            onPressOut={startMotion.onPressOut}
+          >
             <Animated.View style={startMotion.animatedStyle}>
               <XStack
                 flex={1}
@@ -87,7 +95,12 @@ export function TestStopwatchPanel({ onMeasured }: TestStopwatchPanelProps) {
         )}
 
         {stopwatch.status === "running" && (
-          <Pressable style={{ flex: 1 }} onPress={handleStop} onPressIn={stopMotion.onPressIn} onPressOut={stopMotion.onPressOut}>
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={handleStop}
+            onPressIn={stopMotion.onPressIn}
+            onPressOut={stopMotion.onPressOut}
+          >
             <Animated.View style={stopMotion.animatedStyle}>
               <XStack
                 flex={1}
@@ -108,7 +121,12 @@ export function TestStopwatchPanel({ onMeasured }: TestStopwatchPanelProps) {
         )}
 
         {stopwatch.status === "stopped" && (
-          <Pressable style={{ flex: 1 }} onPress={handleReset} onPressIn={resetMotion.onPressIn} onPressOut={resetMotion.onPressOut}>
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={handleReset}
+            onPressIn={resetMotion.onPressIn}
+            onPressOut={resetMotion.onPressOut}
+          >
             <Animated.View style={resetMotion.animatedStyle}>
               <XStack
                 flex={1}

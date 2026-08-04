@@ -62,13 +62,7 @@ function ArcGauge({ score, label, color, size }: ArcGaugeProps) {
             )}
           </G>
         </Svg>
-        <Text
-          position="absolute"
-          bottom={0}
-          style={{ color }}
-          fontWeight="800"
-          fontSize={20}
-        >
+        <Text position="absolute" bottom={0} style={{ color }} fontWeight="800" fontSize={20}>
           {clampedScore}
         </Text>
       </YStack>
@@ -92,8 +86,7 @@ export function PsychScoresChart({
   compact = false,
 }: PsychScoresChartProps) {
   const gaugeSize = compact ? 88 : 104
-  const computedOverall =
-    overallScore ?? Math.round((teamworkScore + mindsetScore) / 2)
+  const computedOverall = overallScore ?? Math.round((teamworkScore + mindsetScore) / 2)
 
   return (
     <YStack gap={compact ? 10 : 12}>

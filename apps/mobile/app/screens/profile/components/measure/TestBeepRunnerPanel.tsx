@@ -78,7 +78,11 @@ export function TestBeepRunnerPanel({ onMeasured }: TestBeepRunnerPanelProps) {
       </YStack>
 
       {runner.status === "idle" && (
-        <Pressable onPress={runner.start} onPressIn={startMotion.onPressIn} onPressOut={startMotion.onPressOut}>
+        <Pressable
+          onPress={runner.start}
+          onPressIn={startMotion.onPressIn}
+          onPressOut={startMotion.onPressOut}
+        >
           <Animated.View style={startMotion.animatedStyle}>
             <XStack
               paddingVertical={14}
@@ -116,7 +120,12 @@ export function TestBeepRunnerPanel({ onMeasured }: TestBeepRunnerPanelProps) {
                 alignItems="center"
                 justifyContent="center"
               >
-                <Text color={eliteForgeColors.emerald} fontWeight="800" fontSize={13} textAlign="center">
+                <Text
+                  color={eliteForgeColors.emerald}
+                  fontWeight="800"
+                  fontSize={13}
+                  textAlign="center"
+                >
                   {translate("profileScreen:measureShuttleDone")}
                 </Text>
               </XStack>
@@ -140,7 +149,12 @@ export function TestBeepRunnerPanel({ onMeasured }: TestBeepRunnerPanelProps) {
                 alignItems="center"
                 justifyContent="center"
               >
-                <Text color={eliteForgeColors.orange} fontWeight="800" fontSize={13} textAlign="center">
+                <Text
+                  color={eliteForgeColors.orange}
+                  fontWeight="800"
+                  fontSize={13}
+                  textAlign="center"
+                >
                   {translate("profileScreen:measureFinishBeep")}
                 </Text>
               </XStack>

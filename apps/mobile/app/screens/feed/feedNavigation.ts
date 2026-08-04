@@ -13,4 +13,3 @@ export function showFeedComingSoon(destination: FeedDestination) {
     translate(`feedDrawer:${destination}Soon` as never),
   )
 }
-
