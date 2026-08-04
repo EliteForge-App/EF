@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react"
-import { useFocusEffect } from "@react-navigation/native"
 import {
   Alert,
   KeyboardAvoidingView,
@@ -9,6 +8,7 @@ import {
   StatusBar,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useFocusEffect } from "@react-navigation/native"
 import { Text, XStack, YStack } from "tamagui"
 
 import { Button, Input } from "@/components/ui"
@@ -18,6 +18,7 @@ import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 import type { PlayerProfileData } from "@/utils/playerProfileStorage"
+
 import { PositionPicker } from "./components/PositionPicker"
 import { ProfileAvatar } from "./components/ProfileAvatar"
 import { usePlayerProfile } from "./usePlayerProfile"

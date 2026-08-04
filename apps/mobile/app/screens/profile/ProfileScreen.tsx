@@ -1,6 +1,6 @@
 import { useCallback } from "react"
-import { useFocusEffect } from "@react-navigation/native"
 import { Alert, Pressable, ScrollView, StatusBar } from "react-native"
+import { useFocusEffect } from "@react-navigation/native"
 import { Text, YStack } from "tamagui"
 
 import { useAuth } from "@/context/AuthContext"
@@ -16,8 +16,8 @@ import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { showFeedComingSoon } from "@/screens/feed/feedNavigation"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
-import { PositionSuggestionCard } from "./components/PositionSuggestionCard"
 import { PhysicalTestCard } from "./components/PhysicalTestCard"
+import { PositionSuggestionCard } from "./components/PositionSuggestionCard"
 import { ProfileHeader, getPositionLabel } from "./components/ProfileHeader"
 import { ProfilePersonalCard } from "./components/ProfilePersonalCard"
 import { ProfileQuickLinkCard, type ProfileQuickLinkId } from "./components/ProfileQuickLinkCard"

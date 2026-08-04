@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Animated from "react-native-reanimated"
 import { Text, XStack, YStack } from "tamagui"
 
+import { useAuth } from "@/context/AuthContext"
 import {
   getTestAvailability,
   getTestDefinition,
@@ -11,7 +12,6 @@ import {
   type TestRawResult,
 } from "@/data/mockPlayerProfile"
 import { formatRawResultSummary, scoreTestResult } from "@/data/profileTestScoring"
-import { useAuth } from "@/context/AuthContext"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { translate } from "@/i18n/translate"

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
-
 import type { PlayerPositionId } from "@/data/suggestPlayerPosition"
-import type { PsychTestResult } from "@/utils/playerProfileStorage"
 import {
   createDefaultProfile,
   loadPlayerProfile,
   savePlayerProfile,
   type PlayerProfileData,
+  type PsychTestResult,
 } from "@/utils/playerProfileStorage"
 
 function mergeProfile(

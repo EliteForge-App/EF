@@ -3,10 +3,10 @@ import { Ionicons } from "@expo/vector-icons"
 import Animated from "react-native-reanimated"
 import { Text, XStack, YStack } from "tamagui"
 
-import type { PsychTestResult } from "@/utils/playerProfileStorage"
 import { useInteractiveMotion } from "@/hooks/useInteractiveMotion"
 import { translate } from "@/i18n/translate"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
+import type { PsychTestResult } from "@/utils/playerProfileStorage"
 
 import { PsychScoresChart } from "./PsychScoresChart"
 

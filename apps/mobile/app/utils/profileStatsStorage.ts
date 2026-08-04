@@ -1,5 +1,6 @@
 import type { PhysicalTestState, PlayerStats } from "@/data/mockPlayerProfile"
 import { load, remove, save } from "@/utils/storage"
+
 export interface ProfileStatsSnapshot {
   stats: PlayerStats
   tests: PhysicalTestState[]

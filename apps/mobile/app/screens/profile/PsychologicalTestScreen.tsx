@@ -17,8 +17,8 @@ import { translate } from "@/i18n/translate"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
-import { usePlayerProfile } from "./usePlayerProfile"
 import { PsychScoresChart } from "./components/PsychScoresChart"
+import { usePlayerProfile } from "./usePlayerProfile"
 
 type Step = "intro" | "questions" | "result"
 
