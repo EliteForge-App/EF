@@ -47,10 +47,12 @@ function DrawerMenuItem({
   icon,
   label,
   onPress,
+  subtitle,
 }: {
   icon: keyof typeof Ionicons.glyphMap
   label: string
   onPress: () => void
+  subtitle?: string
 }) {
   const motion = useInteractiveMotion("button")
 
@@ -90,7 +92,7 @@ function DrawerMenuItem({
               {label}
             </Text>
             <Text color="rgba(255,255,255,0.45)" fontSize={12}>
-              {translate("feedDrawer:comingSoon")}
+              {subtitle ?? translate("feedDrawer:comingSoon")}
             </Text>
           </YStack>
           <Ionicons name="chevron-forward" size={18} color={eliteForgeColors.emerald} />
@@ -146,6 +148,9 @@ export function FeedDrawer({ onClose, onItemPress, onLogout }: FeedDrawerProps) 
               key={item.id}
               icon={item.icon}
               label={translate(item.labelKey as never)}
+              subtitle={
+                item.id === "profile" ? translate("profileScreen:title") : undefined
+              }
               onPress={() => onItemPress(item.id)}
             />
           ))}

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import { StatusBar } from "react-native"
+import { useNavigation } from "@react-navigation/native"
 import { Drawer } from "react-native-drawer-layout"
 import Animated, { useAnimatedScrollHandler, useSharedValue } from "react-native-reanimated"
 import { YStack } from "tamagui"
@@ -8,6 +9,7 @@ import { useAuth } from "@/context/AuthContext"
 import { MOCK_FEED_POSTS, type FeedPost } from "@/data/mockFeedPosts"
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout"
 import { isRTL } from "@/i18n"
+import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
 import { FeedComposeModal } from "./components/FeedComposeModal"
@@ -16,9 +18,10 @@ import { FeedDrawer, type FeedDrawerItemId } from "./components/FeedDrawer"
 import { FeedNavbar } from "./components/FeedNavbar"
 import { FeedPostCard } from "./components/FeedPostCard"
 import { FeedShareSheet } from "./components/FeedShareSheet"
-import { openProfile, showFeedComingSoon } from "./feedNavigation"
+import { showFeedComingSoon } from "./feedNavigation"
 
-export function FeedScreen() {
+export function FeedScreen(_props: AppStackScreenProps<"Feed">) {
+  const navigation = useNavigation<AppStackScreenProps<"Feed">["navigation"]>()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [composeOpen, setComposeOpen] = useState(false)
   const [sharePost, setSharePost] = useState<FeedPost | null>(null)
@@ -38,14 +41,18 @@ export function FeedScreen() {
   const handleDrawerItem = useCallback(
     (id: FeedDrawerItemId) => {
       closeDrawer()
+      if (id === "profile") {
+        navigation.navigate("Profile")
+        return
+      }
       showFeedComingSoon(id)
     },
-    [closeDrawer],
+    [closeDrawer, navigation],
   )
 
   const handleProfilePress = useCallback(() => {
-    openProfile()
-  }, [])
+    navigation.navigate("Profile")
+  }, [navigation])
 
   const handleLogout = useCallback(() => {
     closeDrawer()

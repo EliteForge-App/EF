@@ -61,6 +61,12 @@
           "usesCleartextTraffic": true
         }
       }
+    ],
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "Allow Elite Forge to access your photos for your profile picture."
+      }
     ]
   ],
   "experiments": {

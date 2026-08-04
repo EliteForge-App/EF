@@ -13,6 +13,7 @@ El frontend vive en `apps/mobile/` y es una aplicación **React Native** generad
 | Área | Estado |
 |------|--------|
 | Pantalla de **Login** | Implementada + conectada al API Gateway |
+| Pantalla **Perfil** | Implementada (stats, tests físicos in-app, test psicológico, edición, avatar, sugerencia de posición) |
 | Pantalla **Feed** (red social) | Implementada (UI mock, sin backend) |
 | Pantalla de **Register** (placeholder) | En stack; registro real vía portal web externo |
 | **Backend / auth real** | Login conectado al API Gateway (`POST /api/auth/login`) |
@@ -74,6 +75,9 @@ La pantalla inicial para usuarios autenticados es **Feed** (`FeedScreen`). Sin s
 | `apisauce` | Cliente HTTP (login + demo podcast) |
 | `date-fns` | Formateo de fechas |
 | `react-native-drawer-layout` | Drawer lateral del Feed (menú) |
+| `react-native-svg` | Radar chart de stats en Perfil |
+| `expo-image-picker` | Selección de foto de perfil desde galería |
+| `expo-file-system` | Persistencia local del avatar en `document/profile-avatars/` |
 
 ### Desarrollo
 
@@ -97,14 +101,33 @@ apps/mobile/
 │   │   ├── useResponsiveLayout.ts
 │   │   └── useInteractiveMotion.ts
 │   ├── data/
-│   │   └── mockFeedPosts.ts       # Posts mock del Feed (sin backend)
+│   │   ├── mockFeedPosts.ts       # Posts mock del Feed (sin backend)
+│   │   ├── mockPlayerProfile.ts   # Stats, definiciones de tests físicos, Tag ID
+│   │   ├── profileTestScoring.ts  # Conversión raw → score 0–100 por test
+│   │   ├── psychologicalTest.ts   # 10 preguntas situacionales + rasgos psicológicos
+│   │   ├── suggestPlayerPosition.ts # Sugerencia de posición (físico + mental)
+│   │   └── beepTestProtocol.ts    # Protocolo del beep test in-app
 │   ├── screens/
 │   │   ├── auth/
 │   │   │   ├── LoginScreen.tsx
 │   │   │   └── RegisterScreen.tsx
-│   │   └── feed/
-│   │       ├── FeedScreen.tsx
-│   │       └── components/        # FeedNavbar, FeedDrawer, FeedPostCard, etc.
+│   │   ├── feed/
+│   │   │   ├── FeedScreen.tsx
+│   │   │   └── components/        # FeedNavbar, FeedDrawer, FeedPostCard, etc.
+│   │   └── profile/               # Módulo Perfil (rama Dev-David)
+│   │       ├── ProfileScreen.tsx
+│   │       ├── ProfileEditScreen.tsx
+│   │       ├── PhysicalTestSessionScreen.tsx
+│   │       ├── PsychologicalTestScreen.tsx
+│   │       ├── useProfileStats.ts
+│   │       ├── usePlayerProfile.ts
+│   │       ├── components/        # Radar, avatar, tests, medición, psico
+│   │       ├── hooks/             # useStopwatch, useBeepTestRunner
+│   │       └── utils/
+│   │           └── pickProfileImage.ts
+│   ├── utils/
+│   │   ├── profileStatsStorage.ts # MMKV: tests físicos + stats
+│   │   └── playerProfileStorage.ts # MMKV: perfil + test psicológico
 │   ├── navigators/AppNavigator.tsx
 │   ├── theme/
 │   │   ├── eliteForgeColors.ts
@@ -228,7 +251,7 @@ Destino post-login. Estilo tipo **Facebook**: publicaciones de jugadores, anunci
 
 | Ítem | Estado |
 |------|--------|
-| Perfil | Alert “Próximamente” |
+| Perfil | Navega a `ProfileScreen` |
 | Grupos | Alert “Próximamente” |
 | Partidos | Alert “Próximamente” |
 | Reservas | Alert “Próximamente” |
@@ -289,11 +312,174 @@ Claves relevantes del login en `app/i18n/*.ts`:
 | `loginScreen:facebookButton` | Continuar con Facebook |
 | `loginScreen:facebookButtonShort` | Facebook |
 
+Claves del perfil: `profileScreen:*` (stats, tests físicos, test psicológico, edición, posiciones, medición in-app).
+
 Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 
 ---
 
+## Pantalla Perfil — implementación (rama `Dev-David`)
+
+Módulo completo de perfil de jugador en `app/screens/profile/`. **Sin backend** — persistencia local con **MMKV** por usuario (`authEmail` o `"guest"`).
+
+### Navegación
+
+Rutas en `AppNavigator.tsx` / `navigationTypes.ts`:
+
+| Ruta | Pantalla | Parámetros |
+|------|----------|------------|
+| `Profile` | `ProfileScreen` | — |
+| `ProfileEdit` | `ProfileEditScreen` | — |
+| `PhysicalTestSession` | `PhysicalTestSessionScreen` | `{ testId: PhysicalTestId }` |
+| `PsychologicalTest` | `PsychologicalTestScreen` | — |
+
+**Entrada desde Feed:** avatar del `FeedNavbar` o ítem **Perfil** del `FeedDrawer` → `navigation.navigate("Profile")`.
+
+### Arquitectura de datos
+
+| Archivo | Responsabilidad |
+|---------|-----------------|
+| `mockPlayerProfile.ts` | 6 stats, 6 tests físicos, definiciones, bloqueo mensual, Tag ID |
+| `profileTestScoring.ts` | Raw de medición → score 0–100 |
+| `psychologicalTest.ts` | 10 preguntas situacionales, rasgos, scoring teamwork/mindset |
+| `suggestPlayerPosition.ts` | Sugerencia entre 7 posiciones (72% físico + 28% mental) |
+| `profileStatsStorage.ts` | MMKV `profileStats.v2.{userKey}` |
+| `playerProfileStorage.ts` | MMKV `playerProfile.v1.{userKey}` |
+
+**Hooks:**
+
+| Hook | Uso |
+|------|-----|
+| `useProfileStats` | Stats, radar, tests físicos, completar test, sugerencia de posición |
+| `usePlayerProfile` | Datos personales, avatar, posición favorita, test psicológico |
+
+### Stats y radar (`StatsRadarChart`)
+
+Seis estadísticas, **una por test físico**:
+
+| Stat | Test |
+|------|------|
+| Ataque | 10 tiros desde 16 m |
+| Defensa | Control y recuperación (rúbrica) |
+| Resistencia | Beep test |
+| Velocidad | Sprint 30 m |
+| Pases | Loughborough |
+| Regate | Agilidad Illinois |
+
+- Gráfico **radar SVG** (`react-native-svg`): cuadrícula, ejes, polígono relleno, puntos y etiquetas.
+- Filas inferiores clicables → abren el test correspondiente.
+- Promedio **AVG** solo con stats ya medidas (> 0).
+
+### Tests físicos in-app
+
+Flujo en `PhysicalTestSessionScreen`: **protocolo → medir → confirmar**.
+
+| Test ID | Panel de medición |
+|---------|-------------------|
+| `attackShots16m` | `TestShotCounterPanel` (goles / fallos) |
+| `defenseControl` | `TestDefenseRubricPanel` (rúbrica 1–5) |
+| `beepTest` | `TestBeepRunnerPanel` + `useBeepTestRunner` |
+| `sprint30m` | `TestStopwatchPanel` |
+| `loughboroughPass` | `TestPassCounterPanel` |
+| `illinoisAgility` | `TestStopwatchPanel` |
+
+- **Bloqueo mensual** por test (calendario); no se puede repetir hasta el mes siguiente.
+- Resultado guardado en MMKV; el radar se actualiza al volver al perfil (`useFocusEffect`).
+- Botón **dev** (`__DEV__`): “Reiniciar tests” limpia tests físicos + psicológico.
+
+### Sugerencia de posición
+
+`PositionSuggestionCard` + `suggestPlayerPosition()`:
+
+- **7 posiciones:** ST, extremo, CAM, CM, CDM, lateral, central.
+- Pesos ideales por stat según posición.
+- Confianza según cobertura de tests (mín. 3 para “lista”) y margen entre 1.º y 2.º.
+- **Posición favorita** (editar perfil) tiene prioridad en el header (badge “Favorita”).
+- Sin favorita: muestra sugerida (badge “Sugerida”) + tarjeta con detalle.
+- Con test psicológico completo (10 respuestas): mezcla **28% perfil mental** (`psychInfluenced: true`).
+
+### Test psicológico (Mindset & Teamwork)
+
+`PsychologicalTestScreen` + `PsychTestCard`:
+
+- **10 escenarios** futbolísticos (salida bajo presión, jerarquía, transiciones, gestión de resultado, etc.).
+- Likert 1–5; algunas preguntas **invertidas** (p. ej. evitar compañero tras error grave).
+- **5 rasgos:** organizador, verticalidad, disciplina, creatividad, competitividad.
+- Scores: **Teamwork**, **Mindset** (on-field), **Overall**.
+- Gráfico ligero `PsychScoresChart`: medidores en arco SVG (teamwork violeta, mindset naranja).
+- **Bloqueo mensual** al confirmar.
+- Respuestas antiguas (8 preguntas) no alimentan la sugerencia de posición hasta repetir el test.
+
+### Edición de perfil y avatar
+
+`ProfileEditScreen`:
+
+- Nombre, apodo, email, edad, bio.
+- **Posición favorita** (`PositionPicker`, 7 posiciones).
+- Foto desde galería (`expo-image-picker` + `expo-file-system`).
+
+`pickProfileImageFromGallery(userKey, previousUri)`:
+
+- Copia la imagen a `document/profile-avatars/{userKey}.{ext}`.
+- URI persistente en MMKV; sobrevive reinicios de app.
+- En **ProfileScreen**, tocar avatar abre galería y guarda al instante (`updateProfile`).
+
+Plugin en `app.json`: `expo-image-picker` con permiso de fotos.
+
+### Secciones de `ProfileScreen`
+
+1. **Header** — avatar, nombre, apodo, email, Tag ID, posición (favorita / sugerida / default).
+2. **Sobre mí** — edad y bio (`ProfilePersonalCard`).
+3. **Sugerencia de posición** — si aplica (`PositionSuggestionCard`).
+4. **Estadísticas** — radar + hint.
+5. **Tests físicos** — lista de `PhysicalTestCard` (estado, bloqueo, CTA).
+6. **Evaluación psicológica** — `PsychTestCard`.
+7. **Accesos rápidos** — Grupos, Partidos, Reservas → `showFeedComingSoon()` (stub).
+
+### Componentes del módulo
+
+| Componente | Descripción |
+|------------|-------------|
+| `ProfileHeader` | Back, barra bicolor, avatar editable, badges |
+| `ProfileAvatar` | Iniciales o imagen, badge cámara |
+| `StatsRadarChart` | Radar SVG + barras por stat |
+| `PhysicalTestCard` | Tarjeta por test con estado mensual |
+| `PsychTestCard` | CTA + `PsychScoresChart` si hay resultado |
+| `PsychScoresChart` | Arcos SVG teamwork / mindset |
+| `PositionSuggestionCard` | Posición sugerida + confianza |
+| `PositionPicker` | Grid de posiciones en edición |
+| `ProfileQuickLinkCard` | Enlaces stub (grupos, partidos, reservas) |
+| `TestMeasurePanel` | Router a panel según `inputType` del test |
+
+### i18n
+
+Namespace `profileScreen:*` en los **7 idiomas**: stats, tests, medición, psico (10 preguntas), edición, posiciones, dev reset, permisos de galería.
+
+---
+
 ## Registro de cambios (sesión de implementación)
+
+### 2026-08-03 — Módulo Perfil completo (`Dev-David`)
+
+- [x] `ProfileScreen` con header, stats, tests, psico y accesos rápidos
+- [x] Navegación Feed → Perfil (navbar + drawer)
+- [x] Rutas `ProfileEdit`, `PhysicalTestSession`, `PsychologicalTest`
+- [x] 6 stats + 6 tests físicos con medición **in-app** (cronómetro, contadores, beep, rúbrica)
+- [x] Scoring 0–100 (`profileTestScoring.ts`) y bloqueo mensual por test
+- [x] Persistencia MMKV (`profileStatsStorage`, `playerProfileStorage`)
+- [x] Radar chart SVG (`StatsRadarChart`, `react-native-svg`)
+- [x] Sugerencia de posición por stats (`suggestPlayerPosition.ts`, 7 posiciones)
+- [x] Test psicológico: 10 escenarios, rasgos, `PsychScoresChart`, bloqueo mensual
+- [x] Integración mental en sugerencia de posición (72% / 28%)
+- [x] Edición de perfil: datos personales, posición favorita, bio
+- [x] Avatar desde galería con persistencia (`expo-image-picker`, `expo-file-system`)
+- [x] Botón dev `__DEV__`: reiniciar tests físicos + psicológico
+- [x] i18n `profileScreen:*` en 7 idiomas
+
+### 2026-08-03 — Pantalla Perfil (UI mock)
+
+- [x] Primera iteración: radar mock, tests listados, navegación desde Feed
+- [x] *(Supersedido por el módulo completo de arriba)*
 
 ### 2026-07-31 — Fix lint CI (prettier + TextInput)
 
@@ -366,7 +552,7 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 - [x] `FeedNavbar` interactivo con miniatura de perfil y menú
 - [x] `FeedNavbar` sin texto "Feed" — solo logo Elite Forge centrado
 - [x] `FeedMenuButton` (hamburguesa estándar) y nombre bajo avatar eliminado en navbar
-- [x] `openProfile()` en `feedNavigation.ts` — alerta "Próximamente" al pulsar avatar
+- [x] Avatar del navbar y ítem **Perfil** del drawer navegan a `ProfileScreen`
 - [x] `FeedDrawer` con accesos futuros (Perfil, Grupos, Partidos, Reservas) y logout
 - [x] `FeedComposer`, `FeedPostCard`, `FeedAvatar` — estilo Facebook
 - [x] Mock data: publicaciones de jugadores + anuncios Elite Forge (`mockFeedPosts.ts`)
@@ -376,7 +562,8 @@ Idiomas: `en`, `es`, `fr`, `ja`, `ko`, `hi`, `ar`.
 ### Pendiente / fuera de alcance actual
 
 - [ ] API real del Feed (publicaciones, likes, comentarios)
-- [ ] Pantallas Perfil, Grupos, Partidos, Reservas
+- [ ] Backend de perfil (stats, tests, avatar en servidor)
+- [ ] Pantallas Grupos, Partidos, Reservas (solo stub desde perfil y drawer)
 - [ ] Formulario completo de Register in-app
 - [ ] OAuth real (Google / Facebook SDK)
 - [ ] Eliminar o aislar pantallas demo de Ignite
@@ -442,4 +629,4 @@ Al implementar algo nuevo:
 
 ---
 
-*Última actualización: “Crear cuenta” abre apps/web `/auth/sign-up` (NestJS/Prisma).*
+*Última actualización: módulo Perfil completo en rama `Dev-David` (tests in-app, psico, avatar, sugerencia de posición).*

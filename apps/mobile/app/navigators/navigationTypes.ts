@@ -7,6 +7,8 @@ import {
 } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
+import type { PhysicalTestId } from "@/data/mockPlayerProfile"
+
 // Demo Tab Navigator types
 export type DemoTabParamList = {
   DemoCommunity: undefined
@@ -18,6 +20,10 @@ export type DemoTabParamList = {
 // App Stack Navigator types
 export type AppStackParamList = {
   Feed: undefined
+  Profile: undefined
+  ProfileEdit: undefined
+  PsychologicalTest: undefined
+  PhysicalTestSession: { testId: PhysicalTestId }
   Login: undefined
   Register: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>

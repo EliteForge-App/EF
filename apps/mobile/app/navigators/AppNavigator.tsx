@@ -13,6 +13,10 @@ import { LoginScreen } from "@/screens/auth/LoginScreen"
 import { RegisterScreen } from "@/screens/auth/RegisterScreen"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
 import { FeedScreen } from "@/screens/feed/FeedScreen"
+import { ProfileScreen } from "@/screens/profile/ProfileScreen"
+import { ProfileEditScreen } from "@/screens/profile/ProfileEditScreen"
+import { PsychologicalTestScreen } from "@/screens/profile/PsychologicalTestScreen"
+import { PhysicalTestSessionScreen } from "@/screens/profile/PhysicalTestSessionScreen"
 import { useAppTheme } from "@/theme/context"
 import { eliteForgeColors } from "@/theme/eliteForgeColors"
 
@@ -46,6 +50,10 @@ const AppStack = () => {
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Feed" component={FeedScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
+          <Stack.Screen name="PsychologicalTest" component={PsychologicalTestScreen} />
+          <Stack.Screen name="PhysicalTestSession" component={PhysicalTestSessionScreen} />
 
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>

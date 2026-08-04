@@ -14,7 +14,3 @@ export function showFeedComingSoon(destination: FeedDestination) {
   )
 }
 
-/** Destino Perfil — vista pendiente de implementación. */
-export function openProfile() {
-  showFeedComingSoon("profile")
-}
